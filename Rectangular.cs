@@ -25,7 +25,6 @@ namespace ColorHistogram
             _parentControl = control;
         }
 
-
         #region Public API
 
         /// <summary>

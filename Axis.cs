@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace ColorHistogram
@@ -166,32 +165,6 @@ namespace ColorHistogram
 
         #region Overrides
 
-        ///// <summary>
-        ///// Draws the axis.
-        ///// </summary>
-        //public override void Draw(Graphics g)
-        //{
-        //    if (LabelNumber < 2 && LabelNumber >= 0) return;
-        //    var labelNumber = GetLabelNumber(g);
-        //    if (labelNumber < 2) return;
-        //    var prevClip = g.ClipBounds;
-        //    g.SetClip(Bounds);
-        //    var step = (float)InnerBounds.Height / (labelNumber - 1);
-        //    var valueStep = (MaximumValue - MinimumValue) / (labelNumber - 1);
-        //    var pen = new Pen(Color);
-        //    var brush = new SolidBrush(Color);
-        //    var h = g.MeasureString("A", Font).Height;
-        //    for (int i = 0; i < labelNumber; i++)
-        //    {
-        //        var y = InnerBounds.Top + i * step;
-        //        g.DrawLine(pen, Bounds.Left, y, Bounds.Left + _lineLength, y);
-        //        var v = MinimumValue + i * valueStep;
-        //        g.DrawString(v.ToString(NumericFormat), Font,
-        //            brush, Bounds.Left + _lineLength, y - h / 2);
-        //    }
-        //    g.SetClip(prevClip);
-        //}
-
         /// <summary>
         /// Draws the axis.
         /// </summary>
@@ -205,16 +178,16 @@ namespace ColorHistogram
             var range = MaximumValue - MinimumValue;
             var scale = range / InnerBounds.Height;
             var vStep = pixelStep * scale;
+
             var exponent = Math.Pow(10.0, Math.Floor(Math.Log10(vStep)));
             var mantissa = Math.Round(vStep / exponent);
-
             // get step to be 1, 2 or 5 powers of 10
             if (mantissa > 1 && mantissa < 2) mantissa = 2;
             else if (mantissa > 2 && mantissa < 5) mantissa = 5;
             else if (mantissa > 5) mantissa = 10;
             vStep = mantissa * exponent;
-            var firstTick = DecimalRound(MinimumValue);
 
+            var firstTick = DecimalRound(MinimumValue);
             var nTicks = (MaximumValue - firstTick) / vStep;
 
             var pen = new Pen(Color);
@@ -244,17 +217,11 @@ namespace ColorHistogram
 
             var textHeight = g.MeasureString("A", Font).Height;
             var tStep = (2 * (double) textHeight);
-      //      var tNumber = (int) (InnerBounds.Height / tStep);
-
             var range = MaximumValue - MinimumValue;
             var scale = range / InnerBounds.Height;
             var mStep = tStep * scale;
 
             mStep = DecimalRound(mStep);
-
-      //      var exponent = Math.Pow(10.0, Math.Floor(Math.Log10(mStep)));
-         //   var mantissa = (int)Math.Round(mStep / exponent);
-         //   mStep = mantissa * exponent;
             return (int) (range / mStep);
         }
 
@@ -264,7 +231,6 @@ namespace ColorHistogram
 
             var textHeight = g.MeasureString("A", Font).Height;
             var pStep = (2 * (double)textHeight);
-            //      var tNumber = (int) (InnerBounds.Height / tStep);
 
             var range = MaximumValue - MinimumValue;
             var scale = range / InnerBounds.Height;
@@ -279,12 +245,6 @@ namespace ColorHistogram
             else if (mantissa > 5) mantissa = 10;
             return mantissa * exponent;
         }
-
-        private double GetFirstTick(Graphics g)
-        {
-            return DecimalRound(MinimumValue);
-        }
-
 
         private double DecimalRound(double v)
         {
