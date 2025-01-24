@@ -32,7 +32,7 @@
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.loadFileButton = new System.Windows.Forms.ToolStripButton();
             this.randomDataButton = new System.Windows.Forms.ToolStripButton();
-            this._colorHistogram = new ColorHistogram.ColorLegend();
+            this._colorLegend = new ColorHistogram.ColorLegend();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -69,11 +69,11 @@
             // 
             // _colorHistogram
             // 
-            this._colorHistogram.AxisColor = System.Drawing.SystemColors.ControlLightLight;
-            this._colorHistogram.AxisFont = new System.Drawing.Font("Microsoft Sans Serif", 8.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this._colorHistogram.AxisNumericFormat = "F1";
-            this._colorHistogram.BackColor = System.Drawing.SystemColors.Desktop;
-            this._colorHistogram.Colors = new System.Drawing.Color[] {
+            this._colorLegend.AxisColor = System.Drawing.SystemColors.ControlLightLight;
+            this._colorLegend.AxisFont = new System.Drawing.Font("Microsoft Sans Serif", 8.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this._colorLegend.AxisNumericFormat = "F1";
+            this._colorLegend.BackColor = System.Drawing.SystemColors.Desktop;
+            this._colorLegend.Colors = new System.Drawing.Color[] {
         System.Drawing.Color.Red,
         System.Drawing.Color.Orange,
         System.Drawing.Color.Yellow,
@@ -81,31 +81,32 @@
         System.Drawing.Color.Blue,
         System.Drawing.Color.Indigo,
         System.Drawing.Color.Violet};
-            this._colorHistogram.Data = null;
-            this._colorHistogram.Font = new System.Drawing.Font("Microsoft Sans Serif", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this._colorHistogram.InnerMargin = 6;
-            this._colorHistogram.Location = new System.Drawing.Point(139, 73);
-            this._colorHistogram.Margin = new System.Windows.Forms.Padding(10, 9, 10, 9);
-            this._colorHistogram.MaximumHistogramLength = 500;
-            this._colorHistogram.MaximumHistogramWidth = 100;
-            this._colorHistogram.MaximumValue = double.NaN;
-            this._colorHistogram.MinimumHistogramLength = 20;
-            this._colorHistogram.MinimumHistogramWidth = 4;
-            this._colorHistogram.MinimumValue = double.NaN;
-            this._colorHistogram.Name = "_colorHistogram";
-            this._colorHistogram.Padding = new System.Windows.Forms.Padding(10);
-            this._colorHistogram.ShowAxis = true;
-            this._colorHistogram.ShowHistogram = true;
-            this._colorHistogram.ShowTitle = true;
-            this._colorHistogram.ShowUnits = true;
-            this._colorHistogram.Size = new System.Drawing.Size(349, 312);
-            this._colorHistogram.TabIndex = 0;
-            this._colorHistogram.Title = "Title";
-            this._colorHistogram.TitleColor = System.Drawing.SystemColors.ControlLightLight;
-            this._colorHistogram.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this._colorHistogram.Units = "Units";
-            this._colorHistogram.UnitsColor = System.Drawing.SystemColors.ControlLightLight;
-            this._colorHistogram.UnitsFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this._colorLegend.Data = null;
+            this._colorLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this._colorLegend.InnerMargin = 6;
+            this._colorLegend.LabelNumber = -1;
+            this._colorLegend.Location = new System.Drawing.Point(139, 73);
+            this._colorLegend.Margin = new System.Windows.Forms.Padding(10, 9, 10, 9);
+            this._colorLegend.MaximumHistogramLength = 500;
+            this._colorLegend.MaximumHistogramWidth = 100;
+            this._colorLegend.MaximumValue = double.NaN;
+            this._colorLegend.MinimumHistogramLength = 20;
+            this._colorLegend.MinimumHistogramWidth = 4;
+            this._colorLegend.MinimumValue = double.NaN;
+            this._colorLegend.Name = "_colorHistogram";
+            this._colorLegend.Padding = new System.Windows.Forms.Padding(10);
+            this._colorLegend.ShowAxis = true;
+            this._colorLegend.ShowHistogram = true;
+            this._colorLegend.ShowTitle = true;
+            this._colorLegend.ShowUnits = true;
+            this._colorLegend.Size = new System.Drawing.Size(349, 312);
+            this._colorLegend.TabIndex = 0;
+            this._colorLegend.Title = "Title";
+            this._colorLegend.TitleColor = System.Drawing.SystemColors.ControlLightLight;
+            this._colorLegend.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this._colorLegend.Units = "Units";
+            this._colorLegend.UnitsColor = System.Drawing.SystemColors.ControlLightLight;
+            this._colorLegend.UnitsFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             // 
             // Form
             // 
@@ -113,7 +114,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.toolStrip);
-            this.Controls.Add(this._colorHistogram);
+            this.Controls.Add(this._colorLegend);
             this.Name = "Form";
             this.Text = "Color Histogram Example";
             this.toolStrip.ResumeLayout(false);
@@ -125,7 +126,7 @@
 
         #endregion
 
-        private ColorLegend _colorHistogram;
+        private ColorLegend _colorLegend;
         private System.Windows.Forms.ToolStrip toolStrip;
         private System.Windows.Forms.ToolStripButton loadFileButton;
         private System.Windows.Forms.ToolStripButton randomDataButton;

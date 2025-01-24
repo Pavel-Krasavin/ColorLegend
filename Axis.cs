@@ -72,7 +72,7 @@ namespace ColorHistogram
         }
 
         /// <summary>
-        /// Gets or sets number of axis labels. Zero means automatic selection.
+        /// Gets or sets a number of labels in the axis. Negative number means adaptive calculation.
         /// </summary>
         public int LabelNumber
         {
@@ -82,7 +82,7 @@ namespace ColorHistogram
             }
             set
             {
-                if (value != _labelNumber && value >= 0)
+                if (value != _labelNumber)
                 {
                     _labelNumber = value;
                     Invalidate();
@@ -170,25 +170,39 @@ namespace ColorHistogram
         /// </summary>
         public override void Draw(Graphics g)
         {
+            if (double.IsNaN(MaximumValue) || double.IsInfinity(MaximumValue) ||
+                double.IsNaN(MinimumValue) || double.IsInfinity(MinimumValue)) return;
             if (InnerBounds.Height == 0 || InnerBounds.Width == 0) return;
             if (LabelNumber < 2 && LabelNumber >= 0) return;
-            var textHeight = g.MeasureString("A", Font).Height;
-            // let's say
-            var pixelStep = 3 * (double) textHeight;
+
             var range = MaximumValue - MinimumValue;
+            if (range > double.MaxValue) return;
+
+            var textHeight = g.MeasureString("A", Font).Height;
+            var firstTick = LabelNumber < 0 ? DecimalRound(MinimumValue) : MinimumValue;
+            double nTicks = LabelNumber;
+            
             var scale = range / InnerBounds.Height;
-            var vStep = pixelStep * scale;
-
-            var exponent = Math.Pow(10.0, Math.Floor(Math.Log10(vStep)));
-            var mantissa = Math.Round(vStep / exponent);
-            // get step to be 1, 2 or 5 powers of 10
-            if (mantissa > 1 && mantissa < 2) mantissa = 2;
-            else if (mantissa > 2 && mantissa < 5) mantissa = 5;
-            else if (mantissa > 5) mantissa = 10;
-            vStep = mantissa * exponent;
-
-            var firstTick = DecimalRound(MinimumValue);
-            var nTicks = (MaximumValue - firstTick) / vStep;
+            double vStep = 1;
+            if (LabelNumber < 0)
+            {
+                // let's say
+                var pixelStep = 3 * (double)textHeight;
+                vStep = pixelStep * scale;
+                var exponent = Math.Pow(10.0, Math.Floor(Math.Log10(vStep)));
+                var mantissa = Math.Round(vStep / exponent);
+                // get step to be 1, 2 or 5 powers of 10
+                if (mantissa > 1 && mantissa < 2) mantissa = 2;
+                else if (mantissa > 2 && mantissa < 5) mantissa = 5;
+                else if (mantissa > 5) mantissa = 10;
+                vStep = mantissa * exponent;
+                nTicks = (MaximumValue - firstTick) / vStep;
+            }
+            else
+            {
+                nTicks = LabelNumber;
+                vStep = range / (LabelNumber - 1);
+            }
 
             var pen = new Pen(Color);
             var brush = new SolidBrush(Color);

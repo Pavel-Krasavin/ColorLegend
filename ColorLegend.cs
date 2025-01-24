@@ -363,6 +363,18 @@ namespace ColorHistogram
             }
         }
 
+        /// <summary>
+        /// Gets or sets a number of labels in the axis. Negative number means adaptive calculation.
+        /// </summary>
+        public int LabelNumber
+        {
+            get { return _axis.LabelNumber; }
+            set
+            {
+                _axis.LabelNumber = value;
+            }
+        }
+
         #endregion Public API
 
         #region Constructors

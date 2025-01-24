@@ -11,6 +11,7 @@ namespace ColorHistogram
         {
             InitializeComponent();
             LoadCalc_Pressure();
+
         }
 
         #region Private API
@@ -19,7 +20,7 @@ namespace ColorHistogram
         {
             string[] textLines = null;
             textLines = File.ReadAllLines("..\\..\\Data\\CALC_PRESSURE");
-            _colorHistogram.Data = ParseText(textLines, -99);
+            _colorLegend.Data = ParseText(textLines, -99);
         }
 
         private double[] ParseText(string[] textLines, double nullValue = double.NaN)
@@ -55,7 +56,7 @@ namespace ColorHistogram
                 {
                     MessageBox.Show("Exception while reading the file: " + ex.Message);
                 }
-                _colorHistogram.Data = ParseText(textLines);
+                _colorLegend.Data = ParseText(textLines);
             }
         }
 
@@ -67,7 +68,7 @@ namespace ColorHistogram
             {
                 data[i] = r.NextDouble();
             }
-            _colorHistogram.Data = data;
+            _colorLegend.Data = data;
         } 
 
         #endregion Event Handlers
