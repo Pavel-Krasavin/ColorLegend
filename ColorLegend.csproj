@@ -33,7 +33,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PGMUI.Printing.v1.2.Core, Version=1.2.5.0, Culture=neutral, PublicKeyToken=1faf19f8d90fd557" />
+    <Reference Include="PGMUI.TreeMap.v1.2.Core, Version=1.2.5.0, Culture=neutral, PublicKeyToken=1faf19f8d90fd557" />
+    <Reference Include="PGMUI.XtraPrinting.v1.2, Version=1.2.5.0, Culture=neutral, PublicKeyToken=1faf19f8d90fd557" />
+    <Reference Include="PGMUI.XtraTreeMap.v1.2, Version=1.2.5.0, Culture=neutral, PublicKeyToken=1faf19f8d90fd557" />
+    <Reference Include="PGMUI.XtraTreeMap.v1.2.UI, Version=1.2.5.0, Culture=neutral, PublicKeyToken=1faf19f8d90fd557" />
+    <Reference Include="PGMUI.XtraVerticalGrid.v1.2, Version=1.2.5.0, Culture=neutral, PublicKeyToken=1faf19f8d90fd557" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -44,21 +51,51 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="PGMUI.Data.Desktop.v1.2">
+      <HintPath>C:\Program Files (x86)\PGMUI 1.2\Components\Bin\Framework\PGMUI.Data.Desktop.v1.2.dll</HintPath>
+    </Reference>
+    <Reference Include="PGMUI.Data.v1.2">
+      <HintPath>C:\Program Files (x86)\PGMUI 1.2\Components\Bin\Framework\PGMUI.Data.v1.2.dll</HintPath>
+    </Reference>
+    <Reference Include="PGMUI.Utils.v1.2">
+      <HintPath>C:\Program Files (x86)\PGMUI 1.2\Components\Bin\Framework\PGMUI.Utils.v1.2.dll</HintPath>
+    </Reference>
+    <Reference Include="PGMUI.XtraBars.v1.2">
+      <HintPath>C:\Program Files (x86)\PGMUI 1.2\Components\Bin\Framework\PGMUI.XtraBars.v1.2.dll</HintPath>
+    </Reference>
+    <Reference Include="PGMUI.XtraEditors.v1.2">
+      <HintPath>C:\Program Files (x86)\PGMUI 1.2\Components\Bin\Framework\PGMUI.XtraEditors.v1.2.dll</HintPath>
+    </Reference>
+    <Reference Include="PGMUI.XtraGrid.v1.2">
+      <HintPath>C:\Program Files (x86)\PGMUI 1.2\Components\Bin\Framework\PGMUI.XtraGrid.v1.2.dll</HintPath>
+    </Reference>
+    <Reference Include="PGMUI.XtraLayout.v1.2">
+      <HintPath>C:\Program Files (x86)\PGMUI 1.2\Components\Bin\Framework\PGMUI.XtraLayout.v1.2.dll</HintPath>
+    </Reference>
+    <Reference Include="PGMUI.XtraTreeList.v1.2">
+      <HintPath>C:\Program Files (x86)\PGMUI 1.2\Components\Bin\Framework\PGMUI.XtraTreeList.v1.2.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Axis.cs" />
+    <Compile Include="Labels.cs" />
     <Compile Include="ColorLegend.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ColorLegend.Designer.cs">
       <DependentUpon>ColorLegend.cs</DependentUpon>
     </Compile>
-    <Compile Include="ColorRibbon.cs" />
-    <Compile Include="Form.cs">
+    <Compile Include="ColorLegendProperties.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form.Designer.cs">
-      <DependentUpon>Form.cs</DependentUpon>
+    <Compile Include="ColorLegendProperties.Designer.cs">
+      <DependentUpon>ColorLegendProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ColorRibbon.cs" />
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Helper.cs" />
     <Compile Include="Histogram.cs" />
@@ -68,8 +105,11 @@
     <EmbeddedResource Include="ColorLegend.resx">
       <DependentUpon>ColorLegend.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form.resx">
-      <DependentUpon>Form.cs</DependentUpon>
+    <EmbeddedResource Include="ColorLegendProperties.resx">
+      <DependentUpon>ColorLegendProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

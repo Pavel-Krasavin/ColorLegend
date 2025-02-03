@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using PGMUI.Data.Linq.Helpers;
+using PGMUI.Emf;
 
-namespace ColorHistogram
+namespace ColorLegend
 {
     public partial class ColorLegend : UserControl
     {
 
         #region Private Data Members
+
+   //     const int WS_EX_TRANSPARENT = 0x20;
 
         // size of a size grip
         private const int SizeGripGauge = 16;
@@ -16,13 +21,45 @@ namespace ColorHistogram
         private Rectangle _rect1 = new Rectangle(), _rect2 = new Rectangle();
         private int _maxHistLength = 500, _minHistLength = 20, _maxHistWidth = 100, _minHistWidth = 4;
         
-        private Axis _axis;
+        private Labels _labels;
         private ColorRibbon _colorRibbon;
         private Histogram _histogram;
        
-        private bool _showHistogram = true, _showAxis = true, _showTitle = true, _showUnits = true;
+        private bool _showHistogram = true, _showLabels = true, _showTitle = true, _showExTitle = true, _showFrame = false;
+        private bool _mouseTransparent = false;
+        private Color _frameColor = Color.Black;
+        private int _frameWidth = 1;
+        //private readonly int[] _mouseEvents = new int[] { 
+        //    0x0084, 0x0200, 0x0203, 0x0201, 0x0202, 0x02A1, 0x020E, 0x020A, 0x0206, 0x0204, 0x0205, 0x020D, 0x020B, 0x020C
+        //  };
+
+        // indicates that layout is needed
+        private bool _changed;
 
         #endregion Private Data Members
+
+        #region Constructors
+
+        /// <summary>
+        /// Creates an instance.
+        /// </summary>
+        public ColorLegend()
+        {            
+            DoubleBuffered = true;
+
+            _labels = new Labels(this);
+            _colorRibbon = new ColorRibbon(this);
+            _histogram = new Histogram(this);
+            _labels.TopBottomPadding = _colorRibbon.TopBottomPadding = _histogram.TopBottomPadding = 20;
+
+            InitializeComponent();
+            InitMovement();
+         //   this.ResizeRedraw = true;
+
+            RepositionElements();
+        }
+
+        #endregion Constructors
 
         #region Public API
 
@@ -31,13 +68,13 @@ namespace ColorHistogram
         /// </summary>
         public double[] Data
         {
-            get { return _histogram.Data; }
+            get => _histogram.Data;
             set
             {
                 _histogram.Data = value;
-                _axis.MaximumValue = double.IsNaN(_histogram.MaximumVisibleValue) ?
+                _labels.MaximumValue = double.IsNaN(_histogram.MaximumVisibleValue) ?
                      _histogram.MaximumValue : _histogram.MaximumVisibleValue;
-                _axis.MinimumValue = double.IsNaN(_histogram.MinimumVisibleValue) ?
+                _labels.MinimumValue = double.IsNaN(_histogram.MinimumVisibleValue) ?
                     _histogram.MinimumValue : _histogram.MinimumVisibleValue;
             }
         }
@@ -47,13 +84,25 @@ namespace ColorHistogram
         /// </summary>
         public bool ShowHistogram
         {
-            get { return _showHistogram; }
+            get => _showHistogram;
             set {
                 if (value != _showHistogram)
                 {
                     _showHistogram = value;
-                    Invalidate();
+                    RepositionElements();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets flag indicating whether to show the histogram outliers.
+        /// </summary>
+        public bool ShowOutliers
+        {
+            get => _histogram.ShowOutliers;
+            set
+            {
+                _histogram.ShowOutliers = value;
             }
         }
 
@@ -62,44 +111,92 @@ namespace ColorHistogram
         /// </summary>
         public bool ShowTitle
         {
-            get { return _showTitle; }
+            get => _showTitle;
             set
             {
                 if (value != _showTitle)
                 {
                     _showTitle = value;
+                    RepositionElements();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets flag indicating whether to show <see cref="ExTitle"/>.
+        /// </summary>
+        public bool ShowExtendedTitle
+        {
+            get => _showExTitle;
+            set
+            {
+                if (value != _showExTitle)
+                {
+                    _showExTitle = value;
+                    RepositionElements();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets flag indicating whether to show <see cref="Labels"/>.
+        /// </summary>
+        public bool ShowLabels
+        {
+            get => _showLabels;
+            set
+            {
+                if (value != _showLabels)
+                {
+                    _showLabels = value;
+                    RepositionElements();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets flag indicating whether to show tghe outer frame.
+        /// </summary>
+        public bool ShowFrame
+        {
+            get => _showFrame;
+            set
+            {
+                if (value != _showFrame)
+                {
+                    _showFrame = value;
                     Invalidate();
                 }
             }
         }
 
         /// <summary>
-        /// Gets or sets flag indicating whether to show <see cref="Units"/>.
+        /// Gets or sets a <see cref="Color"/> for the frame.
         /// </summary>
-        public bool ShowUnits
+        public Color FrameColor
         {
-            get { return _showUnits; }
+            get => _frameColor;
             set
             {
-                if (value != _showUnits)
+                if (value != _frameColor)
                 {
-                    _showUnits = value;
+                    _frameColor =  value;
                     Invalidate();
                 }
             }
         }
 
         /// <summary>
-        /// Gets or sets flag indicating whether to show <see cref="Axis"/>.
+        /// Gets or sets a width of the frame.
         /// </summary>
-        public bool ShowAxis
+        public int FrameWidth
         {
-            get { return _showAxis; }
+            get => _frameWidth;
             set
             {
-                if (value != _showAxis)
+                if (value != _frameWidth)
                 {
-                    _showAxis = value;
+                    _frameWidth = value;
                     Invalidate();
                 }
             }
@@ -110,12 +207,12 @@ namespace ColorHistogram
         /// </summary>
         public string Title
         {
-            get { return TitleLabel.Text; }
+            get => _titleLabel.Text;
             set
             {
                 if (value != Title)
                 {
-                    TitleLabel.Text = value;
+                    _titleLabel.Text = value;
                     RepositionElements();
                 }
             }
@@ -126,12 +223,12 @@ namespace ColorHistogram
         /// </summary>
         public Font TitleFont
         {
-            get { return TitleLabel.Font; }
+            get => _titleLabel.Font;
             set
             {
                 if (value != TitleFont)
                 {
-                    TitleLabel.Font = value;
+                    _titleLabel.Font = value;
                     RepositionElements();
                 }
             }
@@ -142,68 +239,68 @@ namespace ColorHistogram
         /// </summary>
         public Color TitleColor
         {
-            get { return TitleLabel.ForeColor; }
+            get => _titleLabel.ForeColor;
             set
             {
-                TitleLabel.ForeColor = value;
+                _titleLabel.ForeColor = value;
             }
         }
 
         /// <summary>
-        /// Gets or sets the control's units string.
+        /// Gets or sets the control's extended title string.
         /// </summary>
-        public string Units
+        public string ExtendedTitle
         {
-            get { return UnitsLabel.Text; }
+            get => _exTitleLabel.Text;
             set
             {
-                if (value != Units)
+                if (value != ExtendedTitle)
                 {
-                    UnitsLabel.Text = value;
+                    _exTitleLabel.Text = value;
                     RepositionElements();
                 }
             }
         }
 
         /// <summary>
-        /// Gets or sets a <see cref="Font"/> for the units label.
+        /// Gets or sets a <see cref="Font"/> for the extended title label.
         /// </summary>
-        public Font UnitsFont
+        public Font ExtendedTitleFont
         {
-            get { return UnitsLabel.Font; }
+            get => _exTitleLabel.Font;
             set
             {
-                if (value != UnitsFont)
+                if (value != ExtendedTitleFont)
                 {
-                    UnitsLabel.Font = value;
+                    _exTitleLabel.Font = value;
                     RepositionElements();
                 }
             }
         }
 
         /// <summary>
-        /// Gets or sets a <see cref="Color"/> for the units label.
+        /// Gets or sets a <see cref="Color"/> for the extended title label.
         /// </summary>
-        public Color UnitsColor
+        public Color ExtendedTitleColor
         {
-            get { return UnitsLabel.ForeColor; }
+            get => _exTitleLabel.ForeColor;
             set
             {
-                UnitsLabel.ForeColor = value;
+                _exTitleLabel.ForeColor = value;
             }
         }
 
         /// <summary>
         /// Gets or sets a <see cref="Font"/> for the axis.
         /// </summary>
-        public Font AxisFont
+        public Font LabelsFont
         {
-            get { return _axis.Font; }
+            get => _labels.Font;
             set
             {
-                if (value != _axis.Font)
+                if (value != _labels.Font)
                 {
-                    _axis.Font = value;
+                    _labels.Font = value;
                     RepositionElements();
                 }
             }
@@ -212,12 +309,12 @@ namespace ColorHistogram
         /// <summary>
         /// Gets or sets a <see cref="Color"/> for the axis.
         /// </summary>
-        public Color AxisColor
+        public Color LabelsColor
         {
-            get { return _axis.Color; }
+            get => _labels.Color;
             set
             {
-                _axis.Color = value;
+                _labels.Color = value;
             }
         }
 
@@ -226,10 +323,10 @@ namespace ColorHistogram
         /// </summary>
         public string AxisNumericFormat
         {
-            get { return _axis.NumericFormat; }
+            get => _labels.NumericFormat;
             set
             {
-                _axis.NumericFormat = value;
+                _labels.NumericFormat = value;
             }
         }
 
@@ -301,26 +398,11 @@ namespace ColorHistogram
         }
 
         /// <summary>
-        /// Gets or sets a maximum width of the child <see cref="Histogram"/>.
-        /// </summary>
-        public int MaximumHistogramWidth
-        {
-            get { return _maxHistWidth; }
-            set
-            {
-                if (value != _maxHistWidth)
-                {
-                    _maxHistWidth = Math.Max(_minHistWidth, value);
-                }
-            }
-        }
-
-        /// <summary>
         /// Gets or sets a minimum width of the child <see cref="Histogram"/>.
         /// </summary>
         public int MinimumHistogramWidth
         {
-            get { return _minHistWidth; }
+            get => _minHistWidth;
             set
             {
                 if (value != _minHistWidth)
@@ -332,75 +414,108 @@ namespace ColorHistogram
         }
 
         /// <summary>
+        /// Gets or sets a maximum width of the child <see cref="Histogram"/>.
+        /// </summary>
+        public int MaximumHistogramWidth
+        {
+            get => _maxHistWidth;
+            set
+            {
+                if (value != _maxHistWidth)
+                {
+                    _maxHistWidth = Math.Max(_minHistWidth, value);
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets or sets a minimum value to draw.
         /// </summary>
-        public double MinimumValue
+        public double MinimumVisibleValue
         {
-            get
-            {
-                return _histogram.MinimumVisibleValue;
-            }
+            get => _histogram.MinimumVisibleValue;
             set
             {
                 _histogram.MinimumVisibleValue = value;
-                _axis.MinimumValue = _histogram.MinimumVisibleValue;
+                _labels.MinimumValue = _histogram.MinimumVisibleValue;
             }
         }
 
         /// <summary>
         /// Gets or sets a maximum value to draw.
         /// </summary>
-        public double MaximumValue
+        public double MaximumVisibleValue
         {
-            get
-            {
-                return _histogram.MaximumVisibleValue;
-            }
+            get => _histogram.MaximumVisibleValue;
             set
             {
                 _histogram.MaximumVisibleValue = value;
-                _axis.MaximumValue = _histogram.MaximumVisibleValue;
+                _labels.MaximumValue = _histogram.MaximumVisibleValue;
             }
         }
+        /// <summary>
+        /// Gets data maximum value.
+        /// </summary>
+        public double MaximumValue => _histogram.MaximumValue;
+
+        /// <summary>
+        /// Gets data minimum value.
+        /// </summary>
+        public double MinimumValue => _histogram.MinimumValue;
+
 
         /// <summary>
         /// Gets or sets a number of labels in the axis. Negative number means adaptive calculation.
         /// </summary>
         public int LabelNumber
         {
-            get { return _axis.LabelNumber; }
+            get => _labels.LabelNumber;
+            set => _labels.LabelNumber = value;
+        }
+
+        /// <summary>
+        /// Gets or sets flag indicating whether this <see cref="ColorLegend"/> passes mouse events to the parent control.
+        /// </summary>
+        public bool MouseTransparent
+        {
+            get => _mouseTransparent;
+            set {
+                if (value != _mouseTransparent)
+                {
+                    _mouseTransparent = value;
+                    Invalidate();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets flag indicating whether minimum values should be on top.
+        /// </summary>
+        public virtual bool InvertDirection
+        {
+            get => _histogram.InvertDirection;
             set
             {
-                _axis.LabelNumber = value;
+                _histogram.InvertDirection = value;
+                _colorRibbon.InvertDirection = value;
+                _labels.InvertDirection = value;
             }
         }
 
         #endregion Public API
 
-        #region Constructors
-
-        /// <summary>
-        /// Creates an instance.
-        /// </summary>
-        public ColorLegend()
-        {
-            DoubleBuffered = true;
-
-            _axis = new Axis(this);
-            _colorRibbon = new ColorRibbon(this);
-            _histogram = new Histogram(this);
-            _axis.TopBottomPadding = _colorRibbon.TopBottomPadding = _histogram.TopBottomPadding = 20;
-
-            InitializeComponent();
-            InitMovement();
-            this.ResizeRedraw = true;
-            
-            RepositionElements();
-        }
-
-        #endregion Constructors
-
         #region Overrides
+
+        //protected override CreateParams CreateParams
+        //{
+        //    get
+        //    {
+        //        var cp = base.CreateParams;
+        //        cp.ExStyle = cp.ExStyle | WS_EX_TRANSPARENT;
+
+        //        return cp;
+        //    }
+        //}
 
         /// <inheritdoc/>
         protected override void OnPaint(PaintEventArgs e)
@@ -409,13 +524,24 @@ namespace ColorHistogram
             e.Graphics.SetClip(new Rectangle(0, 0, Width, Height));
             _colorRibbon.Draw(e.Graphics);
             if (ShowHistogram)
+            {
                 _histogram.Draw(e.Graphics);
-            if (ShowAxis)
-                _axis.Draw(e.Graphics);
+            }
+            if (ShowLabels)
+            {
+                _labels.Draw(e.Graphics);
+            }
+            if (ShowFrame)
+            {
+                DrawFrame(e.Graphics);
+            }
          
-            // draw a size grip to visualize resizing possibility
-            var rc = new Rectangle(this.ClientSize.Width - SizeGripGauge, this.ClientSize.Height - SizeGripGauge, SizeGripGauge, SizeGripGauge);
-            ControlPaint.DrawSizeGrip(e.Graphics, this.BackColor, rc);
+            if (!MouseTransparent)
+            {
+                // draw a size grip to visualize resizing possibility
+                var rc = new Rectangle(this.ClientSize.Width - SizeGripGauge, this.ClientSize.Height - SizeGripGauge, SizeGripGauge, SizeGripGauge);
+                ControlPaint.DrawSizeGrip(e.Graphics, this.BackColor, rc);
+            }
         }
 
         /// <inheritdoc/>
@@ -442,16 +568,45 @@ namespace ColorHistogram
         // overriden to make control resizable
         protected override void WndProc(ref Message m)
         {
-            base.WndProc(ref m);
+   //         base.WndProc(ref m);
+
+            const int WM_NCHITTEST = 0x0084;
+            //const int WM_MOUSEMOVE       = 0x0200;
+            //const int WM_LBUTTONDBLCLK   = 0x0203;
+            //const int WM_LBUTTONDOWN     = 0x0201;
+            //const int WM_LBUTTONUP       = 0x0202;
+            //const int WM_MOUSEHOVER      = 0x02A1;
+            //const int WM_MOUSEHWHEEL     = 0x020E;
+            //const int WM_MOUSEWHEEL      = 0x020A;
+            //const int WM_RBUTTONDBLCLK   = 0x0206;
+            //const int WM_RBUTTONDOWN     = 0x0204;
+            //const int WM_RBUTTONUP       = 0x0205;
+            //const int WM_XBUTTONDBLCLK   = 0x020D;
+            //const int WM_XBUTTONDOWN     = 0x020B;
+            //const int WM_XBUTTONUP       = 0x020C;
+
+            const int HTTRANSPARENT = (-1);
 
             // WM_NCHITTEST (message sent to determine
             // what part of the window corresponds to a particular screen coordinate)
-            if (m.Msg == 0x84)
+            if (m.Msg == WM_NCHITTEST)
             {
-                var pos = this.PointToClient(new Point(m.LParam.ToInt32()));
-                if (pos.X >= this.ClientSize.Width - SizeGripGauge && pos.Y >= this.ClientSize.Height - SizeGripGauge)
-                    m.Result = new IntPtr(17);  // HT_BOTTOMRIGHT (bottom right corner)
+                if (MouseTransparent)
+                {
+                    m.Result = new IntPtr(HTTRANSPARENT);
+                    return;
+                }
+                else
+                {
+                    var pos = this.PointToClient(new Point(m.LParam.ToInt32()));
+                    if (IsPointInRightBottomCorner(pos))
+                    {
+                        m.Result = new IntPtr(17);  // HT_BOTTOMRIGHT (bottom right corner)
+                        return;
+                    }
+                }
             }
+            base.WndProc(ref m);
         }
 
         #endregion Overrides
@@ -479,7 +634,7 @@ namespace ColorHistogram
 
             this.MouseMove += (sender, e) =>
             {
-                if (dragging)
+                if (dragging && !MouseTransparent)
                 {
                     this.Left = Math.Max(0, e.X + this.Left - dragStart.X);
                     this.Top = Math.Max(0, e.Y + this.Top - dragStart.Y);
@@ -493,25 +648,25 @@ namespace ColorHistogram
         private void RepositionElements()
         {
             int y = 0;
-            if (!ShowTitle || string.IsNullOrEmpty(Title)) TitleLabel.Visible = false;
+            if (!ShowTitle || string.IsNullOrEmpty(Title)) _titleLabel.Visible = false;
             else
             {
-                TitleLabel.Visible = true;
-                TitleLabel.Location = new Point(Padding.Left, Padding.Right);
-                TitleLabel.MaximumSize = new Size(Width - Padding.Left - Padding.Right, Height / 3);
-                y += TitleLabel.Bottom;
+                _titleLabel.Visible = true;
+                _titleLabel.Location = new Point(Padding.Left, Padding.Right);
+                _titleLabel.MaximumSize = new Size(Width - Padding.Left - Padding.Right, Height / 3);
+                y += _titleLabel.Bottom;
             }
 
-            if (!ShowUnits || string.IsNullOrEmpty(Units)) UnitsLabel.Visible = false;
+            if (!ShowExtendedTitle || string.IsNullOrEmpty(ExtendedTitle)) _exTitleLabel.Visible = false;
             else
             {
-                UnitsLabel.Visible = true;
-                UnitsLabel.Location = new Point(Padding.Left, y + InnerMargin);
-                UnitsLabel.MaximumSize = new Size(Width - Padding.Left - Padding.Right, Height / 3);
-                y += UnitsLabel.Height + InnerMargin;
+                _exTitleLabel.Visible = true;
+                _exTitleLabel.Location = new Point(Padding.Left, y + InnerMargin);
+                _exTitleLabel.MaximumSize = new Size(Width - Padding.Left - Padding.Right, Height / 3);
+                y += _exTitleLabel.Height + InnerMargin;
             }
 
-            // from top: padding, title, margin, units, two margins, histogram, padding
+            // from top: padding, title, margin, extended title, two margins, histogram, padding
             _rect1.Y = y;
             _rect1.Height = Height - y - Padding.Bottom;
             if (MaximumHistogramLength > 0)
@@ -541,9 +696,21 @@ namespace ColorHistogram
             axisRect.Height = _rect1.Height;
             axisRect.X = _rect1.Right;
             axisRect.Y = _rect1.Y;
-            _axis.Bounds = axisRect;
+            _labels.Bounds = axisRect;
 
             Invalidate();
+        }
+
+
+        private bool IsPointInRightBottomCorner(Point p)
+        {
+            return p.X >= this.ClientSize.Width - SizeGripGauge && p.Y >= this.ClientSize.Height - SizeGripGauge;
+        }
+
+        private void DrawFrame(Graphics g)
+        {
+            var pen = new Pen(FrameColor, FrameWidth);
+            g.DrawRectangle(pen, new Rectangle(FrameWidth / 2, FrameWidth / 2, Width - FrameWidth, Height - FrameWidth));  
         }
 
         #endregion Private Methods

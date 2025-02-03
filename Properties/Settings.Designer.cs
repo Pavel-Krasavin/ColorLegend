@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ColorHistogram.Properties
+namespace ColorLegend.Properties
 {
 
 

@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 
-namespace ColorHistogram
+namespace ColorLegend
 {
     /// <summary>
     /// Parent class for rectangular elements in the <see cref="ColorLegend"/>.

@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
-namespace ColorHistogram
+namespace ColorLegend
 {
     internal class Histogram : ColorRibbon
     {
@@ -14,11 +14,12 @@ namespace ColorHistogram
         // changable values for leftmost and rightmost pixel bins
         private double _minValue = double.NaN, _maxValue = double.NaN;
         // minimum and maximum data values
-        private double _min = double.MinValue, _max = double.MaxValue;
+        private double _min = 0, _max = 1;
         private int[] _histData;
         // value of the highest bar
         private int _maxBar;
         private Color _color;
+        private bool _showOutliers;
 
         #endregion Private Data Members
 
@@ -41,7 +42,7 @@ namespace ColorHistogram
         /// </summary>
         public double[] Data
         {
-            get { return _data; }
+            get => _data;
             set
             {
                 _data = value;
@@ -56,10 +57,7 @@ namespace ColorHistogram
         /// </summary>
         public double MaximumVisibleValue
         {
-            get
-            {
-                return _maxValue;
-            }
+            get => _maxValue;
             set
             {
                 if (value != _maxValue && !double.IsInfinity(value))
@@ -94,39 +92,40 @@ namespace ColorHistogram
         /// <summary>
         /// Gets data maximum value.
         /// </summary>
-        public double MaximumValue
-        {
-            get
-            {
-                return _max;
-            }
-        }
+        public double MaximumValue => _max;
 
         /// <summary>
         /// Gets data minimum value.
         /// </summary>
-        public double MinimumValue
-        {
-            get
-            {
-                return _min;
-            }
-        }
+        public double MinimumValue => _min;
 
         /// <summary>
         /// Gets or sets the background color.
         /// </summary>
         public Color Color
         {
-            get
-            {
-                return _color;
-            }
+            get => _color;
             set
             {
                 if (value != _color)
                 {
                     _color = value;
+                    Invalidate();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets flag indicating whether to show the histogram outliers.
+        /// </summary>
+        public bool ShowOutliers
+        {
+            get => _showOutliers;
+            set
+            {
+                if (value != _showOutliers)
+                {
+                    _showOutliers = value;
                     Invalidate();
                 }
             }
@@ -143,7 +142,7 @@ namespace ColorHistogram
         {
             if (NoData) return;
             base.Draw(g);
-            DrawFadings(g);
+            DrawOutliers(g);
             if (Helper.AlmostEqual(_max, _min)) return;
             DrawHistogram(g);
         }
@@ -153,7 +152,7 @@ namespace ColorHistogram
         /// </summary>
         public override Rectangle Bounds
         {
-            get { return base.Bounds; }
+            get => base.Bounds;
             set
             {
                 base.Bounds = value;
@@ -182,10 +181,12 @@ namespace ColorHistogram
         }
 
         /// <summary>
-        /// Draws top and bottom fadings if necessary.
+        /// Draws top and bottom outliers if necessary.
         /// </summary>
-        private void DrawFadings(Graphics g) 
+        private void DrawOutliers(Graphics g) 
         {
+            if (!ShowOutliers) return;
+
             if (MinimumVisibleValue > _min)
             {
                 var rect = new Rectangle(Bounds.X, Bounds.Y, Bounds.Width, TopBottomPadding);

@@ -2,7 +2,7 @@
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
-namespace ColorHistogram
+namespace ColorLegend
 {
     internal class ColorRibbon : Rectangular
     {
@@ -15,8 +15,9 @@ namespace ColorHistogram
         private Color[] _colors;
         private Brush _brush;
 
-        // for fading
+        // for outlier
         protected int _topBottomPadding = 10;
+        private bool _invertDirection;
 
         #endregion Private Data Members
 
@@ -40,10 +41,7 @@ namespace ColorHistogram
         /// </summary>
         public int TopBottomPadding
         {
-            get
-            {
-                return _topBottomPadding;
-            }
+            get => _topBottomPadding;
             set
             {
                 if (_topBottomPadding != value)
@@ -59,16 +57,36 @@ namespace ColorHistogram
         /// </summary>
         public Color[] Colors
         {
-            get
-            {
-                return _colors;
-            }
+            get => _colors;
             set
             {
                 if (value == null || value.Length == 0) value = DefaultColors;
                 _colors = value;
                 CreateBrush();
                 Invalidate();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets flag indicating whether minimum values should be on top.
+        /// </summary>
+        public virtual bool InvertDirection
+        {
+            get => _invertDirection;
+            set
+            {
+                if (value != _invertDirection)
+                {
+                    _invertDirection = value;
+                    var linBrush = _brush as LinearGradientBrush;
+                    if (linBrush != null)
+                    {
+                        var brush = new LinearGradientBrush(InnerBounds, Color.Black, Color.Black, _invertDirection ? 270 : 90);
+                        brush.InterpolationColors = linBrush.InterpolationColors;
+                        _brush = brush;
+                    }
+                    Invalidate();
+                }
             }
         }
 
@@ -79,12 +97,15 @@ namespace ColorHistogram
         /// <inheritdoc/>
         public override Rectangle Bounds
         {
-            get { return base.Bounds; }
+            get => base.Bounds;
             set
             {
-                base.Bounds = value;
-                CreateBrush();
-                Invalidate();
+                if (value != Bounds)
+                {
+                    base.Bounds = value;
+                    CreateBrush();
+                    Invalidate();
+                }
             }
         }
 
@@ -106,14 +127,8 @@ namespace ColorHistogram
         /// <summary>
         /// Gets bounds without <see cref="TopBottomPadding"/>.
         /// </summary>
-        protected Rectangle InnerBounds
-        {
-            get
-            {
-                return new Rectangle(Bounds.X, Bounds.Y + _topBottomPadding,
+        protected Rectangle InnerBounds => new Rectangle(Bounds.X, Bounds.Y + _topBottomPadding,
                     Bounds.Width, Bounds.Height - 2 * _topBottomPadding);
-            }
-        }
 
         #endregion Protected API
 
@@ -137,10 +152,12 @@ namespace ColorHistogram
             }
             colorBlend.Positions = positions;
             colorBlend.Colors = _colors;
+
+
             LinearGradientBrush linBrush = null;
-            if (InnerBounds.Height > 0)
+            if (InnerBounds.Height > 0 && InnerBounds.Width > 0)
             {
-                linBrush = new LinearGradientBrush(InnerBounds, Color.Black, Color.Black, 90);
+                linBrush = new LinearGradientBrush(InnerBounds, Color.Black, Color.Black, _invertDirection ? 270 : 90);
                 linBrush.InterpolationColors = colorBlend;
             }
             _brush = linBrush;
