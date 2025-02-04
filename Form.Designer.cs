@@ -1,6 +1,6 @@
-﻿namespace ColorLegend
+﻿namespace ColorLegendExample
 {
-    partial class Form1
+    partial class Form
     {
         /// <summary>
         /// Required designer variable.
@@ -28,14 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form));
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.loadFileButton = new System.Windows.Forms.ToolStripButton();
             this.randomDataButton = new System.Windows.Forms.ToolStripButton();
             this._settingsToolStripButton = new System.Windows.Forms.ToolStripButton();
             this._mouseCheckBox = new System.Windows.Forms.CheckBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this._colorLegend = new ColorLegend();
+            this._colorLegend = new ColorLegendExample.ColorLegend();
             this.toolStrip.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -105,8 +105,8 @@
             // 
             // _colorLegend
             // 
-            this._colorLegend.AxisNumericFormat = "F1";
-            this._colorLegend.BackColor = System.Drawing.Color.DimGray;
+            this._colorLegend.AxisNumericFormat = "F2";
+            this._colorLegend.BackColor = System.Drawing.Color.Transparent;
             this._colorLegend.Colors = new System.Drawing.Color[] {
         System.Drawing.Color.Red,
         System.Drawing.Color.Orange,
@@ -119,45 +119,43 @@
             this._colorLegend.ExtendedTitle = "Extended Title";
             this._colorLegend.ExtendedTitleColor = System.Drawing.SystemColors.ControlLightLight;
             this._colorLegend.ExtendedTitleFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this._colorLegend.Font = new System.Drawing.Font("Microsoft Sans Serif", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this._colorLegend.FrameColor = System.Drawing.Color.IndianRed;
-            this._colorLegend.FrameWidth = 5;
-            this._colorLegend.InnerMargin = 6;
-            this._colorLegend.InvertDirection = false;
-            this._colorLegend.LabelNumber = 5;
+            this._colorLegend.FixedSize = false;
+            this._colorLegend.FrameColor = System.Drawing.Color.Black;
+            this._colorLegend.FrameWidth = 1;
+            this._colorLegend.InnerMargin = 3;
+            this._colorLegend.InvertDirection = true;
+            this._colorLegend.LabelNumber = -1;
             this._colorLegend.LabelsColor = System.Drawing.SystemColors.ControlLightLight;
-            this._colorLegend.LabelsFont = new System.Drawing.Font("Microsoft Sans Serif", 8.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this._colorLegend.Location = new System.Drawing.Point(154, 50);
-            this._colorLegend.Margin = new System.Windows.Forms.Padding(10, 9, 10, 9);
-            this._colorLegend.MaximumHistogramLength = 500;
-            this._colorLegend.MaximumHistogramWidth = 300;
+            this._colorLegend.LabelsFont = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this._colorLegend.Location = new System.Drawing.Point(228, 76);
             this._colorLegend.MaximumVisibleValue = double.NaN;
-            this._colorLegend.MinimumHistogramLength = 0;
-            this._colorLegend.MinimumHistogramWidth = 0;
+            this._colorLegend.MinimumHistogramLength = 50;
+            this._colorLegend.MinimumHistogramWidth = 10;
             this._colorLegend.MinimumVisibleValue = double.NaN;
             this._colorLegend.MouseTransparent = false;
             this._colorLegend.Name = "_colorLegend";
-            this._colorLegend.Padding = new System.Windows.Forms.Padding(10);
+            this._colorLegend.Padding = new System.Windows.Forms.Padding(5);
             this._colorLegend.ShowExtendedTitle = true;
-            this._colorLegend.ShowFrame = true;
+            this._colorLegend.ShowFrame = false;
             this._colorLegend.ShowHistogram = true;
             this._colorLegend.ShowLabels = true;
             this._colorLegend.ShowOutliers = true;
+            this._colorLegend.ShowRibbon = true;
             this._colorLegend.ShowTitle = true;
-            this._colorLegend.Size = new System.Drawing.Size(257, 327);
+            this._colorLegend.Size = new System.Drawing.Size(150, 250);
             this._colorLegend.TabIndex = 0;
             this._colorLegend.Title = "Title";
             this._colorLegend.TitleColor = System.Drawing.SystemColors.ControlLightLight;
             this._colorLegend.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             // 
-            // Form1
+            // Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.toolStrip);
-            this.Name = "Form1";
+            this.Name = "Form";
             this.Text = "Color Legend Example";
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();

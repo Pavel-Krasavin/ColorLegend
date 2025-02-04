@@ -2,7 +2,7 @@
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
-namespace ColorLegend
+namespace ColorLegendExample
 {
     internal class ColorRibbon : Rectangular
     {
@@ -62,8 +62,7 @@ namespace ColorLegend
             {
                 if (value == null || value.Length == 0) value = DefaultColors;
                 _colors = value;
-                CreateBrush();
-                Invalidate();
+                PerfromLayout();
             }
         }
 
@@ -103,8 +102,7 @@ namespace ColorLegend
                 if (value != Bounds)
                 {
                     base.Bounds = value;
-                    CreateBrush();
-                    Invalidate();
+                    PerfromLayout();
                 }
             }
         }
@@ -116,7 +114,8 @@ namespace ColorLegend
         {
             if (_brush != null && !InnerBounds.IsEmpty)
             {
-                g.FillRectangle(_brush, InnerBounds);
+                var r = new Rectangle(InnerBounds.X, InnerBounds.Y + 1, InnerBounds.Width, InnerBounds.Height);
+                g.FillRectangle(_brush, r);
             }
         }
 
@@ -137,7 +136,7 @@ namespace ColorLegend
         /// <summary>
         /// Calculates a <see cref="Brush"/> to use for drawing.
         /// </summary>
-        private void CreateBrush()
+        protected override void PositionElements()
         {
             if (Colors.Length == 1)
             {
@@ -161,6 +160,7 @@ namespace ColorLegend
                 linBrush.InterpolationColors = colorBlend;
             }
             _brush = linBrush;
+            Invalidate();
         }
 
         #endregion Private API

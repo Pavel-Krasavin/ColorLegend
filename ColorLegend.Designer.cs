@@ -1,4 +1,4 @@
-﻿namespace ColorLegend
+﻿namespace ColorLegendExample
 {
     partial class ColorLegend
     {
@@ -43,6 +43,7 @@
             this._titleLabel.Size = new System.Drawing.Size(38, 16);
             this._titleLabel.TabIndex = 0;
             this._titleLabel.Text = "Title";
+            this._titleLabel.Visible = false;
             // 
             // _exTitleLabel
             // 
@@ -53,12 +54,13 @@
             this._exTitleLabel.Size = new System.Drawing.Size(75, 13);
             this._exTitleLabel.TabIndex = 1;
             this._exTitleLabel.Text = "Extended Title";
+            this._exTitleLabel.Visible = false;
             // 
             // ColorLegend
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Desktop;
+            this.BackColor = System.Drawing.Color.DimGray;
             this.Controls.Add(this._exTitleLabel);
             this.Controls.Add(this._titleLabel);
             this.Name = "ColorLegend";

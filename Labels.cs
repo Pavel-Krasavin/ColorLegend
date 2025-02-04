@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
+using PGMUI.Data;
 
-namespace ColorLegend
+namespace ColorLegendExample
 {
     internal class Labels : Rectangular
     {
@@ -13,7 +12,9 @@ namespace ColorLegend
         #region Private Data Members
 
         private double _minValue = 0, _maxValue = 1;
-        private int _labelNumber = -1, _lineLength = 5;
+        // store height for intermediate calculations
+        private int _height;
+        private int _labelNumber = -1, _tickLength = 5;
         private string _numFormat = "F1";
         private Color _color = SystemColors.ControlLightLight;
         private Font _font;
@@ -21,6 +22,7 @@ namespace ColorLegend
         private bool _invertDirection;
         private bool _ticksToTheLeft = false;
         private Label[] _labels = new Label[MaxLabelCount];
+        // calculated label count
         private int _labelCount;
         private float _maxLabelLength, _halfTextHeight;
         private static Graphics _graphics;
@@ -31,9 +33,9 @@ namespace ColorLegend
 
         public Labels(Control control) : base(control)
         {
-            Color = SystemColors.ControlLightLight;
-            NumericFormat = "F2";
-            Font = new Font("Microsoft San Serif", 8);
+            _color = SystemColors.ControlLightLight;
+            _numFormat = "F2";
+            _font = new Font("Microsoft San Serif", 6);
         }
 
         #endregion Constructors
@@ -51,8 +53,7 @@ namespace ColorLegend
                 if (value != _minValue && !double.IsNaN(value) && !double.IsInfinity(value))
                 {
                     _minValue = value;
-                    CalculateLabels();
-                    Invalidate();
+                    PerfromLayout();
                 }
             }
         }
@@ -68,8 +69,7 @@ namespace ColorLegend
                 if (value != _maxValue && !double.IsNaN(value) && !double.IsInfinity(value))
                 {
                     _maxValue = value;
-                    CalculateLabels();
-                    Invalidate();
+                    PerfromLayout();
                 }
             }
         }
@@ -85,7 +85,7 @@ namespace ColorLegend
                 if (value != _labelNumber)
                 {
                     _labelNumber = value;
-                    CalculateLabels();
+                    PerfromLayout();
                 }
             }
         }
@@ -101,7 +101,7 @@ namespace ColorLegend
                 if (value != _ticksToTheLeft)
                 {
                     _ticksToTheLeft = value;
-                    CalculateLabels();
+                    PerfromLayout();
                 }
             }
         }
@@ -117,7 +117,7 @@ namespace ColorLegend
                 if (value != _numFormat)
                 {
                     _numFormat = value;
-                    CalculateLabels();
+                    PerfromLayout();
                 }
             }
         }
@@ -133,7 +133,7 @@ namespace ColorLegend
                 if (value != _font)
                 {
                     _font = value;
-                    CalculateLabels();
+                    PerfromLayout();
                 }
             }
         }
@@ -165,7 +165,7 @@ namespace ColorLegend
                 if (_topBottomPadding != value)
                 {
                     _topBottomPadding = value;
-                    CalculateLabels();
+                    PerfromLayout();
                 }
             }
         }
@@ -175,8 +175,7 @@ namespace ColorLegend
         /// </summary>
         public int PreferredWidth
         {
-            get;
-            private set;
+            get => (int) (_maxLabelLength + _tickLength);
         }
 
         /// <summary>
@@ -190,8 +189,71 @@ namespace ColorLegend
                 if (value != _invertDirection)
                 {
                     _invertDirection = value;
-                    CalculateLabels();
+                    PerfromLayout();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Calculates label strings and <see cref="PreferredWidth"/>.
+        /// </summary>
+        /// <param name="height">Element height to calculate by.</param>
+        public void CalculateLabels(int height)
+        {
+            _height = height - 2 * TopBottomPadding;
+            _maxLabelLength = 0;
+            _labelCount = 0;
+            if (height <= 0 || double.IsNaN(MaximumValue) || double.IsInfinity(MaximumValue) ||
+               double.IsNaN(MinimumValue) || double.IsInfinity(MinimumValue) ||
+               LabelNumber < 2 && LabelNumber >= 0)
+            {
+                return;
+            }
+            var range = MaximumValue - MinimumValue;
+            if (range > double.MaxValue) return;
+
+            var bmp = new Bitmap(1, 1);
+            var g = GetGraphics();
+            _halfTextHeight = g.MeasureString("A", Font).Height / 2;
+            var firstTick = MinimumValue;
+
+            var scale = range / _height;
+            double vStep = 1;
+            if (LabelNumber < 0)
+            {
+                // let's say
+                var pixelStep = 5 * (double)_halfTextHeight;
+                vStep = pixelStep * scale;
+                var exponent = Math.Pow(10.0, Math.Floor(Math.Log10(vStep)));
+                var mantissa = Math.Round(vStep / exponent);
+                // get step to be 1, 2 or 5 powers of 10
+                if (mantissa > 1 && mantissa < 2) mantissa = 2;
+                else if (mantissa > 2 && mantissa < 5) mantissa = 5;
+                else if (mantissa > 5) mantissa = 10;
+                vStep = mantissa * exponent;
+                var rem = MinimumValue % vStep;
+                if (Helper.AlmostEqual(rem, 0)) firstTick = MinimumValue;
+                else firstTick = (MinimumValue - rem) + vStep;
+                _labelCount = (int)((MaximumValue - firstTick) / vStep) + 1;
+            }
+            else
+            {
+                _labelCount = LabelNumber;
+                vStep = range / (LabelNumber - 1);
+            }
+            _labelCount = Math.Min(_labelCount, MaxLabelCount);
+
+            for (int i = 0; i < _labelCount; i++)
+            {
+                var v = firstTick + i * vStep;
+                if (v < MinimumValue - Helper.TOLERANCE || v > MaximumValue + Helper.TOLERANCE) continue;
+                var p = (float)(InvertDirection ? ((v - MinimumValue) / scale + InnerBounds.Y) :
+                    (InnerBounds.Bottom - (v - MinimumValue) / scale));
+                var t = v.ToString(NumericFormat);
+                var w = g.MeasureString(t, Font).Width;
+
+                _maxLabelLength = Math.Max(_maxLabelLength, w);
+                _labels[i] = new Label { Width = w, Text = t, Y = p };
             }
         }
 
@@ -206,37 +268,11 @@ namespace ColorLegend
         {
             if (double.IsNaN(MaximumValue) || double.IsInfinity(MaximumValue) ||
                 double.IsNaN(MinimumValue) || double.IsInfinity(MinimumValue)) return;
-            if (InnerBounds.Height == 0 || InnerBounds.Width == 0) return;
+            if (InnerBounds.Height == 0 || InnerBounds.Width == 0 || _labelCount == 0) return;
             if (LabelNumber < 2 && LabelNumber >= 0) return;
 
             var range = MaximumValue - MinimumValue;
             if (range > double.MaxValue) return;
-
-            //var textHeight = g.MeasureString("A", Font).Height;
-            //var firstTick = LabelNumber < 0 ? DecimalRound(MinimumValue) : MinimumValue;
-            //double nTicks = LabelNumber;
-            
-            //var scale = range / InnerBounds.Height;
-            //double vStep = 1;
-            //if (LabelNumber < 0)
-            //{
-            //    // let's say
-            //    var pixelStep = 3 * (double)textHeight;
-            //    vStep = pixelStep * scale;
-            //    var exponent = Math.Pow(10.0, Math.Floor(Math.Log10(vStep)));
-            //    var mantissa = Math.Round(vStep / exponent);
-            //    // get step to be 1, 2 or 5 powers of 10
-            //    if (mantissa > 1 && mantissa < 2) mantissa = 2;
-            //    else if (mantissa > 2 && mantissa < 5) mantissa = 5;
-            //    else if (mantissa > 5) mantissa = 10;
-            //    vStep = mantissa * exponent;
-            //    nTicks = (MaximumValue - firstTick) / vStep;
-            //}
-            //else
-            //{
-            //    nTicks = LabelNumber;
-            //    vStep = range / (LabelNumber - 1);
-            //}
 
             var pen = new Pen(Color);
             var brush = new SolidBrush(Color);
@@ -248,39 +284,32 @@ namespace ColorLegend
                 var s = _labels[i].Text;
                 if (TicksToTheLeft)
                 {
-                    g.DrawLine(pen, Bounds.Left, p, Bounds.Left + _lineLength, p);
+                    g.DrawLine(pen, Bounds.Left, p, Bounds.Left + _tickLength, p);
                     g.DrawString(s, Font,
-                        brush, Bounds.Left + _lineLength, p - _halfTextHeight);
+                        brush, Bounds.Left + _tickLength, p - _halfTextHeight);
                 }
                 else
                 {
-                    g.DrawLine(pen, Bounds.Right - _lineLength, p, Bounds.Right, p);
+                    g.DrawLine(pen, Bounds.Right - _tickLength, p, Bounds.Right, p);
                     g.DrawString(s, Font,
-                        brush, Bounds.Right - _lineLength - _labels[i].Width, p - _halfTextHeight);
+                        brush, Bounds.Right - _tickLength - _labels[i].Width, p - _halfTextHeight);
                 }
             }
-            //for (int i = 0; i < nTicks + 1; i++)
-            //{
-            //    var v = firstTick + i * vStep;
-            //    if (v < MinimumValue - Helper.TOLERANCE || v > MaximumValue + Helper.TOLERANCE) continue;
-            //    var p = (int) ((v - MinimumValue) / scale + InnerBounds.Y);
-            //    if (TicksToTheLeft)
-            //    {
-            //        g.DrawLine(pen, Bounds.Left, p, Bounds.Left + _lineLength, p);
-            //        g.DrawString(v.ToString(NumericFormat), Font,
-            //            brush, Bounds.Left + _lineLength, p - textHeight / 2);
-            //    }
-            //    else
-            //    {
-            //        g.DrawLine(pen, Bounds.Right - _lineLength, p, Bounds.Right, p);
-            //        g.DrawString(v.ToString(NumericFormat), Font,
-            //            brush, Bounds.Left, p - textHeight / 2);
-            //    }
-            //}
-
+          
             g.SetClip(prevClip);
         }
 
+        /// <summary>
+        /// Performs layout.
+        /// </summary>
+        protected override void PositionElements()
+        {
+            if (Helper.AlmostEqual(InnerBounds.Height, _height)) return;
+            CalculateLabels(Bounds.Height);
+            Invalidate();
+        }
+
+        /// <inheritdoc/>
         public override Rectangle Bounds 
         { 
             get => base.Bounds;
@@ -288,7 +317,7 @@ namespace ColorLegend
                 if (value != Bounds)
                 {
                     base.Bounds = value;
-                    CalculateLabels();
+                    PerfromLayout();
                 }
             }
         }
@@ -307,112 +336,6 @@ namespace ColorLegend
             return _graphics;
         }
 
-        private void CalculateLabels()
-        {
-            if (double.IsNaN(MaximumValue) || double.IsInfinity(MaximumValue) ||
-               double.IsNaN(MinimumValue) || double.IsInfinity(MinimumValue) ||
-               InnerBounds.Height == 0 || InnerBounds.Width == 0 ||
-               LabelNumber < 2 && LabelNumber >= 0)
-            {
-                this._labelCount = 0;
-                return; 
-            }
-           
-            var range = MaximumValue - MinimumValue;
-            if (range > double.MaxValue) return;
-
-            var bmp = new Bitmap(1, 1);
-            var g = GetGraphics();
-            _halfTextHeight = g.MeasureString("A", Font).Height / 2;
-            var firstTick = MinimumValue;
-        //    var lastTick = DecimalRound(MaximumValue);
-
-            var scale = range / InnerBounds.Height;
-            double vStep = 1;
-            if (LabelNumber < 0)
-            {
-                // let's say
-                var pixelStep = 5 * (double) _halfTextHeight;
-                vStep = pixelStep * scale;
-                var exponent = Math.Pow(10.0, Math.Floor(Math.Log10(vStep)));
-                var mantissa = Math.Round(vStep / exponent);
-                // get step to be 1, 2 or 5 powers of 10
-                if (mantissa > 1 && mantissa < 2) mantissa = 2;
-                else if (mantissa > 2 && mantissa < 5) mantissa = 5;
-                else if (mantissa > 5) mantissa = 10;
-                vStep = mantissa * exponent;
-                var rem = MinimumValue % vStep;
-                if (Helper.AlmostEqual(rem, 0)) firstTick = MinimumValue;
-                else firstTick = (MinimumValue - rem) + vStep;
-                _labelCount = (int) ((MaximumValue - firstTick) / vStep) + 1;
-            }
-            else
-            {
-                _labelCount = LabelNumber;
-                vStep = range / (LabelNumber - 1);
-            }
-
-            _maxLabelLength = 0;
-
-            for (int i = 0; i < _labelCount; i++)
-            {
-                var v = firstTick + i * vStep;
-                if (v < MinimumValue - Helper.TOLERANCE || v > MaximumValue + Helper.TOLERANCE) continue;
-                var p = (float) (InvertDirection ? 
-                    (InnerBounds.Bottom - (v - MinimumValue) / scale) :
-                    ((v - MinimumValue) / scale + InnerBounds.Y));
-                var t = v.ToString(NumericFormat);
-                var w = g.MeasureString(t, Font).Width;
-                
-                _maxLabelLength = Math.Max(_maxLabelLength, w);
-                _labels[i] = new Label { Width = w, Text = t, Y = p };
-            }
-
-            Invalidate();
-        }
-
-        private int GetLabelNumber(Graphics g)
-        {
-            if (LabelNumber > 1) return LabelNumber;
-
-            var textHeight = g.MeasureString("A", Font).Height;
-            var tStep = (2 * (double) textHeight);
-            var range = MaximumValue - MinimumValue;
-            var scale = range / InnerBounds.Height;
-            var mStep = tStep * scale;
-
-            mStep = DecimalRound(mStep);
-            return (int) (range / mStep);
-        }
-
-        private double GetValueStep(Graphics g)
-        {
-            if (LabelNumber > 1) return LabelNumber;
-
-            var textHeight = g.MeasureString("A", Font).Height;
-            var pStep = (2 * (double)textHeight);
-
-            var range = MaximumValue - MinimumValue;
-            var scale = range / InnerBounds.Height;
-            var vStep = pStep * scale;
-
-            var exponent = (int) Math.Pow(10.0, Math.Floor(Math.Log10(vStep)));
-            var mantissa = (int) Math.Round(vStep / exponent);
-
-            // get step to be 1, 2 or 5 powers of 10
-            if (mantissa > 1 && mantissa < 2) mantissa = 2;
-            else if (mantissa > 2 && mantissa < 5) mantissa = 5;
-            else if (mantissa > 5) mantissa = 10;
-            return mantissa * exponent;
-        }
-
-        private double DecimalRound(double v)
-        {
-            var exponent = Math.Pow(10.0, Math.Floor(Math.Log10(v)));
-            var mantissa = (int)Math.Round(v / exponent);
-            return mantissa * exponent;
-        }
-
         /// <summary>
         /// Gets bounds without <see cref="TopBottomPadding"/>.
         /// </summary>
@@ -428,7 +351,7 @@ namespace ColorLegend
         #endregion Private API
 
         /// <summary>
-        /// Structure to holdd label drawing parameters.
+        /// Structure to hold label drawing parameters.
         /// </summary>
         private struct Label
         {

@@ -1,4 +1,4 @@
-﻿namespace ColorLegend
+﻿namespace ColorLegendExample
 {
     partial class ColorLegendProperties
     {
@@ -31,11 +31,6 @@
             this.components = new System.ComponentModel.Container();
             this.xtraTabControl1 = new PGMUI.XtraTab.XtraTabControl();
             this._xtraTabPage1 = new PGMUI.XtraTab.XtraTabPage();
-            this._minFromDataCheckEdit = new PGMUI.XtraEditors.CheckEdit();
-            this._maxFromDataCheckEdit = new PGMUI.XtraEditors.CheckEdit();
-            this._invertDirectionCheckEdit = new PGMUI.XtraEditors.CheckEdit();
-            this._maxValueSpinEdit = new PGMUI.XtraEditors.SpinEdit();
-            this._minValueSpinEdit = new PGMUI.XtraEditors.SpinEdit();
             this._extendedTitleFontSimpleButton = new PGMUI.XtraEditors.SimpleButton();
             this._titleFontSimpleButton = new PGMUI.XtraEditors.SimpleButton();
             this.labelControl12 = new PGMUI.XtraEditors.LabelControl();
@@ -63,26 +58,26 @@
             this.labelControl14 = new PGMUI.XtraEditors.LabelControl();
             this.labelControl13 = new PGMUI.XtraEditors.LabelControl();
             this._xtraTabPage3 = new PGMUI.XtraTab.XtraTabPage();
+            this._minFromDataCheckEdit = new PGMUI.XtraEditors.CheckEdit();
+            this._maxFromDataCheckEdit = new PGMUI.XtraEditors.CheckEdit();
+            this._invertDirectionCheckEdit = new PGMUI.XtraEditors.CheckEdit();
+            this._maxValueSpinEdit = new PGMUI.XtraEditors.SpinEdit();
+            this._minValueSpinEdit = new PGMUI.XtraEditors.SpinEdit();
             this._showOutliersCheckEdit = new PGMUI.XtraEditors.CheckEdit();
             this._showHistCheckEdit = new PGMUI.XtraEditors.CheckEdit();
             this._xtraTabPage4 = new PGMUI.XtraTab.XtraTabPage();
+            this._labelsSimpleButton = new PGMUI.XtraEditors.SimpleButton();
+            this._showLabelsCheckEdit = new PGMUI.XtraEditors.CheckEdit();
+            this.labelControl11 = new PGMUI.XtraEditors.LabelControl();
+            this._labelsColorEdit = new PGMUI.XtraEditors.ColorEdit();
             this._xtraTabPage5 = new PGMUI.XtraTab.XtraTabPage();
             this._okSimpleButton = new PGMUI.XtraEditors.SimpleButton();
             this._cancelSimpleButton = new PGMUI.XtraEditors.SimpleButton();
             this._applySimpleButton = new PGMUI.XtraEditors.SimpleButton();
             this._errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
-            this._labelsSimpleButton = new PGMUI.XtraEditors.SimpleButton();
-            this._showLabelsCheckEdit = new PGMUI.XtraEditors.CheckEdit();
-            this.labelControl11 = new PGMUI.XtraEditors.LabelControl();
-            this._labelsColorEdit = new PGMUI.XtraEditors.ColorEdit();
             ((System.ComponentModel.ISupportInitialize)(this.xtraTabControl1)).BeginInit();
             this.xtraTabControl1.SuspendLayout();
             this._xtraTabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this._minFromDataCheckEdit.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this._maxFromDataCheckEdit.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this._invertDirectionCheckEdit.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this._maxValueSpinEdit.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this._minValueSpinEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._frameColorEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._exTitleColorEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._titleColorEdit.Properties)).BeginInit();
@@ -98,12 +93,17 @@
             ((System.ComponentModel.ISupportInitialize)(this._exTitleTextEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._titleTextEdit.Properties)).BeginInit();
             this._xtraTabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._minFromDataCheckEdit.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this._maxFromDataCheckEdit.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this._invertDirectionCheckEdit.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this._maxValueSpinEdit.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this._minValueSpinEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._showOutliersCheckEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._showHistCheckEdit.Properties)).BeginInit();
             this._xtraTabPage4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this._errorProvider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._showLabelsCheckEdit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this._labelsColorEdit.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this._errorProvider)).BeginInit();
             this.SuspendLayout();
             // 
             // xtraTabControl1
@@ -123,11 +123,6 @@
             // 
             // _xtraTabPage1
             // 
-            this._xtraTabPage1.Controls.Add(this._minFromDataCheckEdit);
-            this._xtraTabPage1.Controls.Add(this._maxFromDataCheckEdit);
-            this._xtraTabPage1.Controls.Add(this._invertDirectionCheckEdit);
-            this._xtraTabPage1.Controls.Add(this._maxValueSpinEdit);
-            this._xtraTabPage1.Controls.Add(this._minValueSpinEdit);
             this._xtraTabPage1.Controls.Add(this._extendedTitleFontSimpleButton);
             this._xtraTabPage1.Controls.Add(this._titleFontSimpleButton);
             this._xtraTabPage1.Controls.Add(this.labelControl12);
@@ -152,62 +147,6 @@
             this._xtraTabPage1.Name = "_xtraTabPage1";
             this._xtraTabPage1.Size = new System.Drawing.Size(374, 484);
             this._xtraTabPage1.Text = "Layout";
-            // 
-            // _minFromDataCheckEdit
-            // 
-            this._minFromDataCheckEdit.Location = new System.Drawing.Point(262, 360);
-            this._minFromDataCheckEdit.Name = "_minFromDataCheckEdit";
-            this._minFromDataCheckEdit.Properties.Caption = "Get min from data";
-            this._minFromDataCheckEdit.Size = new System.Drawing.Size(107, 20);
-            this._minFromDataCheckEdit.TabIndex = 37;
-            this._minFromDataCheckEdit.CheckedChanged += new System.EventHandler(this.MinFromDataCheckEdit_CheckedChanged);
-            // 
-            // _maxFromDataCheckEdit
-            // 
-            this._maxFromDataCheckEdit.Location = new System.Drawing.Point(140, 360);
-            this._maxFromDataCheckEdit.Name = "_maxFromDataCheckEdit";
-            this._maxFromDataCheckEdit.Properties.Caption = "Get max from data";
-            this._maxFromDataCheckEdit.Size = new System.Drawing.Size(116, 20);
-            this._maxFromDataCheckEdit.TabIndex = 36;
-            this._maxFromDataCheckEdit.CheckedChanged += new System.EventHandler(this.MaxFromDataCheckEdit_CheckedChanged);
-            // 
-            // _invertDirectionCheckEdit
-            // 
-            this._invertDirectionCheckEdit.Location = new System.Drawing.Point(221, 388);
-            this._invertDirectionCheckEdit.Name = "_invertDirectionCheckEdit";
-            this._invertDirectionCheckEdit.Properties.Caption = "Invert direction";
-            this._invertDirectionCheckEdit.Size = new System.Drawing.Size(101, 20);
-            this._invertDirectionCheckEdit.TabIndex = 35;
-            // 
-            // _maxValueSpinEdit
-            // 
-            this._maxValueSpinEdit.EditValue = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this._maxValueSpinEdit.Location = new System.Drawing.Point(63, 435);
-            this._maxValueSpinEdit.Name = "_maxValueSpinEdit";
-            this._maxValueSpinEdit.Properties.Buttons.AddRange(new PGMUI.XtraEditors.Controls.EditorButton[] {
-            new PGMUI.XtraEditors.Controls.EditorButton(PGMUI.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this._maxValueSpinEdit.Size = new System.Drawing.Size(100, 20);
-            this._maxValueSpinEdit.TabIndex = 34;
-            this._maxValueSpinEdit.Validating += new System.ComponentModel.CancelEventHandler(this._maxValueSpinEdit_Validating);
-            // 
-            // _minValueSpinEdit
-            // 
-            this._minValueSpinEdit.EditValue = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this._minValueSpinEdit.Location = new System.Drawing.Point(63, 399);
-            this._minValueSpinEdit.Name = "_minValueSpinEdit";
-            this._minValueSpinEdit.Properties.Buttons.AddRange(new PGMUI.XtraEditors.Controls.EditorButton[] {
-            new PGMUI.XtraEditors.Controls.EditorButton(PGMUI.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this._minValueSpinEdit.Size = new System.Drawing.Size(100, 20);
-            this._minValueSpinEdit.TabIndex = 33;
-            this._minValueSpinEdit.Validating += new System.ComponentModel.CancelEventHandler(this.MinValueSpinEdit_Validating);
             // 
             // _extendedTitleFontSimpleButton
             // 
@@ -422,15 +361,75 @@
             // 
             // _xtraTabPage3
             // 
+            this._xtraTabPage3.Controls.Add(this._minFromDataCheckEdit);
+            this._xtraTabPage3.Controls.Add(this._maxFromDataCheckEdit);
+            this._xtraTabPage3.Controls.Add(this._invertDirectionCheckEdit);
+            this._xtraTabPage3.Controls.Add(this._maxValueSpinEdit);
+            this._xtraTabPage3.Controls.Add(this._minValueSpinEdit);
             this._xtraTabPage3.Controls.Add(this._showOutliersCheckEdit);
             this._xtraTabPage3.Controls.Add(this._showHistCheckEdit);
             this._xtraTabPage3.Name = "_xtraTabPage3";
             this._xtraTabPage3.Size = new System.Drawing.Size(374, 484);
             this._xtraTabPage3.Text = "Histogram";
             // 
+            // _minFromDataCheckEdit
+            // 
+            this._minFromDataCheckEdit.Location = new System.Drawing.Point(34, 130);
+            this._minFromDataCheckEdit.Name = "_minFromDataCheckEdit";
+            this._minFromDataCheckEdit.Properties.Caption = "Get min from data";
+            this._minFromDataCheckEdit.Size = new System.Drawing.Size(107, 20);
+            this._minFromDataCheckEdit.TabIndex = 42;
+            this._minFromDataCheckEdit.CheckedChanged += new System.EventHandler(this.MinFromDataCheckEdit_CheckedChanged);
+            // 
+            // _maxFromDataCheckEdit
+            // 
+            this._maxFromDataCheckEdit.Location = new System.Drawing.Point(34, 82);
+            this._maxFromDataCheckEdit.Name = "_maxFromDataCheckEdit";
+            this._maxFromDataCheckEdit.Properties.Caption = "Get max from data";
+            this._maxFromDataCheckEdit.Size = new System.Drawing.Size(116, 20);
+            this._maxFromDataCheckEdit.TabIndex = 41;
+            this._maxFromDataCheckEdit.CheckedChanged += new System.EventHandler(this.MaxFromDataCheckEdit_CheckedChanged);
+            // 
+            // _invertDirectionCheckEdit
+            // 
+            this._invertDirectionCheckEdit.Location = new System.Drawing.Point(192, 223);
+            this._invertDirectionCheckEdit.Name = "_invertDirectionCheckEdit";
+            this._invertDirectionCheckEdit.Properties.Caption = "Invert direction";
+            this._invertDirectionCheckEdit.Size = new System.Drawing.Size(101, 20);
+            this._invertDirectionCheckEdit.TabIndex = 40;
+            // 
+            // _maxValueSpinEdit
+            // 
+            this._maxValueSpinEdit.EditValue = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this._maxValueSpinEdit.Location = new System.Drawing.Point(213, 82);
+            this._maxValueSpinEdit.Name = "_maxValueSpinEdit";
+            this._maxValueSpinEdit.Properties.Buttons.AddRange(new PGMUI.XtraEditors.Controls.EditorButton[] {
+            new PGMUI.XtraEditors.Controls.EditorButton(PGMUI.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this._maxValueSpinEdit.Size = new System.Drawing.Size(100, 20);
+            this._maxValueSpinEdit.TabIndex = 39;
+            // 
+            // _minValueSpinEdit
+            // 
+            this._minValueSpinEdit.EditValue = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this._minValueSpinEdit.Location = new System.Drawing.Point(214, 130);
+            this._minValueSpinEdit.Name = "_minValueSpinEdit";
+            this._minValueSpinEdit.Properties.Buttons.AddRange(new PGMUI.XtraEditors.Controls.EditorButton[] {
+            new PGMUI.XtraEditors.Controls.EditorButton(PGMUI.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this._minValueSpinEdit.Size = new System.Drawing.Size(100, 20);
+            this._minValueSpinEdit.TabIndex = 38;
+            this._minValueSpinEdit.EditValueChanged += new System.EventHandler(this.MinFromDataCheckEdit_CheckedChanged);
+            // 
             // _showOutliersCheckEdit
             // 
-            this._showOutliersCheckEdit.Location = new System.Drawing.Point(54, 147);
+            this._showOutliersCheckEdit.Location = new System.Drawing.Point(213, 14);
             this._showOutliersCheckEdit.Name = "_showOutliersCheckEdit";
             this._showOutliersCheckEdit.Properties.Caption = "Show Outliers";
             this._showOutliersCheckEdit.Size = new System.Drawing.Size(101, 20);
@@ -438,7 +437,7 @@
             // 
             // _showHistCheckEdit
             // 
-            this._showHistCheckEdit.Location = new System.Drawing.Point(54, 46);
+            this._showHistCheckEdit.Location = new System.Drawing.Point(34, 14);
             this._showHistCheckEdit.Name = "_showHistCheckEdit";
             this._showHistCheckEdit.Properties.Caption = "Show Histogram";
             this._showHistCheckEdit.Size = new System.Drawing.Size(101, 20);
@@ -453,6 +452,41 @@
             this._xtraTabPage4.Name = "_xtraTabPage4";
             this._xtraTabPage4.Size = new System.Drawing.Size(374, 484);
             this._xtraTabPage4.Text = "Labels";
+            // 
+            // _labelsSimpleButton
+            // 
+            this._labelsSimpleButton.Location = new System.Drawing.Point(257, 110);
+            this._labelsSimpleButton.Name = "_labelsSimpleButton";
+            this._labelsSimpleButton.Size = new System.Drawing.Size(75, 23);
+            this._labelsSimpleButton.TabIndex = 34;
+            this._labelsSimpleButton.Text = "Labels font";
+            this._labelsSimpleButton.Click += new System.EventHandler(this.LabelsSimpleButton_Click);
+            // 
+            // _showLabelsCheckEdit
+            // 
+            this._showLabelsCheckEdit.Location = new System.Drawing.Point(26, 55);
+            this._showLabelsCheckEdit.Name = "_showLabelsCheckEdit";
+            this._showLabelsCheckEdit.Properties.Caption = "Show labels";
+            this._showLabelsCheckEdit.Size = new System.Drawing.Size(75, 20);
+            this._showLabelsCheckEdit.TabIndex = 33;
+            // 
+            // labelControl11
+            // 
+            this.labelControl11.Location = new System.Drawing.Point(151, 220);
+            this.labelControl11.Name = "labelControl11";
+            this.labelControl11.Size = new System.Drawing.Size(34, 13);
+            this.labelControl11.TabIndex = 32;
+            this.labelControl11.Text = "Labels:";
+            // 
+            // _labelsColorEdit
+            // 
+            this._labelsColorEdit.EditValue = System.Drawing.Color.Empty;
+            this._labelsColorEdit.Location = new System.Drawing.Point(219, 217);
+            this._labelsColorEdit.Name = "_labelsColorEdit";
+            this._labelsColorEdit.Properties.Buttons.AddRange(new PGMUI.XtraEditors.Controls.EditorButton[] {
+            new PGMUI.XtraEditors.Controls.EditorButton(PGMUI.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this._labelsColorEdit.Size = new System.Drawing.Size(100, 20);
+            this._labelsColorEdit.TabIndex = 31;
             // 
             // _xtraTabPage5
             // 
@@ -493,41 +527,6 @@
             // 
             this._errorProvider.ContainerControl = this;
             // 
-            // _labelsSimpleButton
-            // 
-            this._labelsSimpleButton.Location = new System.Drawing.Point(257, 110);
-            this._labelsSimpleButton.Name = "_labelsSimpleButton";
-            this._labelsSimpleButton.Size = new System.Drawing.Size(75, 23);
-            this._labelsSimpleButton.TabIndex = 34;
-            this._labelsSimpleButton.Text = "Labels font";
-            this._labelsSimpleButton.Click += new System.EventHandler(this.LabelsSimpleButton_Click);
-            // 
-            // _showLabelsCheckEdit
-            // 
-            this._showLabelsCheckEdit.Location = new System.Drawing.Point(26, 55);
-            this._showLabelsCheckEdit.Name = "_showLabelsCheckEdit";
-            this._showLabelsCheckEdit.Properties.Caption = "Show labels";
-            this._showLabelsCheckEdit.Size = new System.Drawing.Size(75, 20);
-            this._showLabelsCheckEdit.TabIndex = 33;
-            // 
-            // labelControl11
-            // 
-            this.labelControl11.Location = new System.Drawing.Point(151, 220);
-            this.labelControl11.Name = "labelControl11";
-            this.labelControl11.Size = new System.Drawing.Size(34, 13);
-            this.labelControl11.TabIndex = 32;
-            this.labelControl11.Text = "Labels:";
-            // 
-            // _labelsColorEdit
-            // 
-            this._labelsColorEdit.EditValue = System.Drawing.Color.Empty;
-            this._labelsColorEdit.Location = new System.Drawing.Point(219, 217);
-            this._labelsColorEdit.Name = "_labelsColorEdit";
-            this._labelsColorEdit.Properties.Buttons.AddRange(new PGMUI.XtraEditors.Controls.EditorButton[] {
-            new PGMUI.XtraEditors.Controls.EditorButton(PGMUI.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this._labelsColorEdit.Size = new System.Drawing.Size(100, 20);
-            this._labelsColorEdit.TabIndex = 31;
-            // 
             // ColorLegendProperties
             // 
             this.AcceptButton = this._okSimpleButton;
@@ -548,11 +547,6 @@
             this.xtraTabControl1.ResumeLayout(false);
             this._xtraTabPage1.ResumeLayout(false);
             this._xtraTabPage1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this._minFromDataCheckEdit.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this._maxFromDataCheckEdit.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this._invertDirectionCheckEdit.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this._maxValueSpinEdit.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this._minValueSpinEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._frameColorEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._exTitleColorEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._titleColorEdit.Properties)).EndInit();
@@ -569,13 +563,18 @@
             ((System.ComponentModel.ISupportInitialize)(this._exTitleTextEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._titleTextEdit.Properties)).EndInit();
             this._xtraTabPage3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this._minFromDataCheckEdit.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this._maxFromDataCheckEdit.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this._invertDirectionCheckEdit.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this._maxValueSpinEdit.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this._minValueSpinEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._showOutliersCheckEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._showHistCheckEdit.Properties)).EndInit();
             this._xtraTabPage4.ResumeLayout(false);
             this._xtraTabPage4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this._errorProvider)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._showLabelsCheckEdit.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this._labelsColorEdit.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this._errorProvider)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -614,11 +613,6 @@
         private PGMUI.XtraEditors.SimpleButton _titleFontSimpleButton;
         private PGMUI.XtraEditors.SimpleButton _extendedTitleFontSimpleButton;
         private PGMUI.XtraEditors.TextEdit _exTitleTextEdit;
-        private PGMUI.XtraEditors.SpinEdit _minValueSpinEdit;
-        private PGMUI.XtraEditors.SpinEdit _maxValueSpinEdit;
-        private PGMUI.XtraEditors.CheckEdit _invertDirectionCheckEdit;
-        private PGMUI.XtraEditors.CheckEdit _minFromDataCheckEdit;
-        private PGMUI.XtraEditors.CheckEdit _maxFromDataCheckEdit;
         private System.Windows.Forms.ErrorProvider _errorProvider;
         private PGMUI.XtraTab.XtraTabPage _xtraTabPage4;
         private PGMUI.XtraTab.XtraTabPage _xtraTabPage5;
@@ -628,5 +622,10 @@
         private PGMUI.XtraEditors.CheckEdit _showLabelsCheckEdit;
         private PGMUI.XtraEditors.LabelControl labelControl11;
         private PGMUI.XtraEditors.ColorEdit _labelsColorEdit;
+        private PGMUI.XtraEditors.CheckEdit _minFromDataCheckEdit;
+        private PGMUI.XtraEditors.CheckEdit _maxFromDataCheckEdit;
+        private PGMUI.XtraEditors.CheckEdit _invertDirectionCheckEdit;
+        private PGMUI.XtraEditors.SpinEdit _maxValueSpinEdit;
+        private PGMUI.XtraEditors.SpinEdit _minValueSpinEdit;
     }
 }

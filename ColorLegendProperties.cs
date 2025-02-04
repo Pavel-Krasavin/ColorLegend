@@ -8,9 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace ColorLegend
+namespace ColorLegendExample
 {
-    public partial class ColorLegendProperties : Form
+    public partial class ColorLegendProperties : System.Windows.Forms.Form
     {
         private ColorLegend _colorLegend;
         private Font _titleFont, _exTitleFont, _labelsFont;
@@ -58,7 +58,6 @@ namespace ColorLegend
             _exTitleFont = _colorLegend.ExtendedTitleFont;
             _labelsFont = _colorLegend.LabelsFont;
 
-
             _frameColorEdit.Color = _colorLegend.FrameColor;
             _titleColorEdit.Color = _colorLegend.TitleColor;
             _exTitleColorEdit.Color = _colorLegend.ExtendedTitleColor;
@@ -93,6 +92,8 @@ namespace ColorLegend
         {
             if (_colorLegend == null) return;
 
+            _colorLegend.SuspendRefresh(true);
+
             _colorLegend.ShowFrame = _showFrameCheckEdit.Checked;
             _colorLegend.ShowTitle = _showTitleCheckEdit.Checked;
             _colorLegend.ShowExtendedTitle = _showExTitleCheckEdit.Checked;
@@ -116,6 +117,8 @@ namespace ColorLegend
             _colorLegend.MaximumVisibleValue = _maxFromDataCheckEdit.Checked ? double.NaN : Convert.ToDouble(_maxValueSpinEdit.EditValue);
 
             _colorLegend.InvertDirection = _invertDirectionCheckEdit.Checked;
+
+            _colorLegend.SuspendRefresh(false);
         }
 
         private void ChangeFont(ref Font font)

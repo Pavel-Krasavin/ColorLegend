@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ColorLegend.Properties
+namespace ColorLegendExample.Properties
 {
 
 

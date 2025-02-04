@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using PGMUI.Data.Linq.Helpers;
-using PGMUI.Emf;
 
-namespace ColorLegend
+namespace ColorLegendExample
 {
     public partial class ColorLegend : UserControl
     {
@@ -18,14 +15,13 @@ namespace ColorLegend
         private const int SizeGripGauge = 16;
         
         private int _innerMargin = 3;
-        private Rectangle _rect1 = new Rectangle(), _rect2 = new Rectangle();
-        private int _maxHistLength = 500, _minHistLength = 20, _maxHistWidth = 100, _minHistWidth = 4;
+        private int _maxHistLength = 500, _minHistLength = 20, _maxHistWidth = 100, _minHistWidth = 10;
         
         private Labels _labels;
         private ColorRibbon _colorRibbon;
         private Histogram _histogram;
        
-        private bool _showHistogram = true, _showLabels = true, _showTitle = true, _showExTitle = true, _showFrame = false;
+        private bool _showHistogram = true, _showLabels = true, _showRibbon = true, _showTitle = true, _showExTitle = true, _showFrame = false;
         private bool _mouseTransparent = false;
         private Color _frameColor = Color.Black;
         private int _frameWidth = 1;
@@ -35,6 +31,8 @@ namespace ColorLegend
 
         // indicates that layout is needed
         private bool _changed;
+        private bool _suspendRefresh;
+        private bool _fixedSize;
 
         #endregion Private Data Members
 
@@ -45,18 +43,24 @@ namespace ColorLegend
         /// </summary>
         public ColorLegend()
         {            
+            this.Layout += ColorLegend_Layout;
             DoubleBuffered = true;
-
             _labels = new Labels(this);
             _colorRibbon = new ColorRibbon(this);
             _histogram = new Histogram(this);
-            _labels.TopBottomPadding = _colorRibbon.TopBottomPadding = _histogram.TopBottomPadding = 20;
+            
+            SuspendRefresh(true);
 
+            _labels.TopBottomPadding = _colorRibbon.TopBottomPadding = _histogram.TopBottomPadding = 20;
             InitializeComponent();
             InitMovement();
-         //   this.ResizeRedraw = true;
+            //   this.ResizeRedraw = true;
+            SuspendRefresh(false);
+        }
 
-            RepositionElements();
+        private void ColorLegend_Layout(object sender, LayoutEventArgs e)
+        {
+            var t = 1;
         }
 
         #endregion Constructors
@@ -89,7 +93,23 @@ namespace ColorLegend
                 if (value != _showHistogram)
                 {
                     _showHistogram = value;
-                    RepositionElements();
+                    DoLayout();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets flag indicating whether to show <see cref="ColorRibbon"/>.
+        /// </summary>
+        public bool ShowRibbon
+        {
+            get => _showRibbon;
+            set
+            {
+                if (value != _showRibbon)
+                {
+                    _showRibbon = value;
+                    DoLayout();
                 }
             }
         }
@@ -117,7 +137,7 @@ namespace ColorLegend
                 if (value != _showTitle)
                 {
                     _showTitle = value;
-                    RepositionElements();
+                    DoLayout();
                 }
             }
         }
@@ -133,7 +153,7 @@ namespace ColorLegend
                 if (value != _showExTitle)
                 {
                     _showExTitle = value;
-                    RepositionElements();
+                    DoLayout();
                 }
             }
         }
@@ -149,7 +169,7 @@ namespace ColorLegend
                 if (value != _showLabels)
                 {
                     _showLabels = value;
-                    RepositionElements();
+                    DoLayout();
                 }
             }
         }
@@ -213,7 +233,7 @@ namespace ColorLegend
                 if (value != Title)
                 {
                     _titleLabel.Text = value;
-                    RepositionElements();
+                    DoLayout();
                 }
             }
         }
@@ -229,7 +249,7 @@ namespace ColorLegend
                 if (value != TitleFont)
                 {
                     _titleLabel.Font = value;
-                    RepositionElements();
+                    DoLayout();
                 }
             }
         }
@@ -257,7 +277,7 @@ namespace ColorLegend
                 if (value != ExtendedTitle)
                 {
                     _exTitleLabel.Text = value;
-                    RepositionElements();
+                    DoLayout();
                 }
             }
         }
@@ -273,7 +293,7 @@ namespace ColorLegend
                 if (value != ExtendedTitleFont)
                 {
                     _exTitleLabel.Font = value;
-                    RepositionElements();
+                    DoLayout();
                 }
             }
         }
@@ -301,7 +321,7 @@ namespace ColorLegend
                 if (value != _labels.Font)
                 {
                     _labels.Font = value;
-                    RepositionElements();
+                    DoLayout();
                 }
             }
         }
@@ -344,7 +364,7 @@ namespace ColorLegend
                 if (value != _innerMargin)
                 {
                     _innerMargin = value;
-                    RepositionElements();
+                    DoLayout();
                 }
             }
         }
@@ -365,21 +385,6 @@ namespace ColorLegend
             }
         }
 
-        /// <summary>
-        /// Gets or sets a maximum length of the child <see cref="Histogram"/>.
-        /// </summary>
-        public int MaximumHistogramLength
-        {
-            get { return _maxHistLength; }
-            set
-            {
-                if (value != _maxHistLength)
-                {
-                    _maxHistLength = Math.Max(_minHistLength, value);
-                    RepositionElements();
-                }
-            }
-        }
 
         /// <summary>
         /// Gets or sets a minimum length of the child <see cref="Histogram"/>.
@@ -392,7 +397,7 @@ namespace ColorLegend
                 if (value != _minHistLength)
                 {
                     _minHistLength = Math.Max(0, Math.Min(value, _maxHistLength));
-                    RepositionElements();
+                    DoLayout();
                 }
             }
         }
@@ -408,22 +413,20 @@ namespace ColorLegend
                 if (value != _minHistWidth)
                 {
                     _minHistWidth = Math.Max(0, Math.Min(value, _maxHistWidth));
-                    RepositionElements();
+                    DoLayout();
                 }
             }
         }
 
-        /// <summary>
-        /// Gets or sets a maximum width of the child <see cref="Histogram"/>.
-        /// </summary>
-        public int MaximumHistogramWidth
+        public bool FixedSize
         {
-            get => _maxHistWidth;
+            get => _fixedSize;
             set
             {
-                if (value != _maxHistWidth)
+                if (_fixedSize != value)
                 {
-                    _maxHistWidth = Math.Max(_minHistWidth, value);
+                    _fixedSize = value;
+                    DoLayout();
                 }
             }
         }
@@ -502,27 +505,66 @@ namespace ColorLegend
             }
         }
 
+        /// <summary>
+        /// Pauses or frees the controls' layout.
+        /// </summary>
+        public void SuspendRefresh(bool suspend)
+        {
+            _suspendRefresh = suspend;
+            if (suspend)
+            {
+                _colorRibbon.SuspendLayout();
+                _labels.SuspendLayout();
+                _histogram.SuspendLayout();
+            }
+            else
+            {
+                _colorRibbon.ResumeLayout();
+                _labels.ResumeLayout();
+                _histogram.ResumeLayout();
+                PositionElements();
+            }
+        }
+
         #endregion Public API
 
         #region Overrides
 
-        //protected override CreateParams CreateParams
-        //{
-        //    get
-        //    {
-        //        var cp = base.CreateParams;
-        //        cp.ExStyle = cp.ExStyle | WS_EX_TRANSPARENT;
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                var cp = base.CreateParams;
+                cp.ExStyle |= 0x00000020; //WS_EX_TRANSPARENT
 
-        //        return cp;
-        //    }
-        //}
+                return cp;
+            }
+        }
+
+        protected override void OnPaintBackground(PaintEventArgs pevent)
+        {
+            // Don't paint background
+        }
 
         /// <inheritdoc/>
         protected override void OnPaint(PaintEventArgs e)
         {
-            base.OnPaint(e);
+            //    base.OnPaint(e);
+            var g = e.Graphics;
+            // Set the best settings possible (quality-wise)
+            g.TextRenderingHint =
+                System.Drawing.Text.TextRenderingHint.AntiAlias;
+            g.InterpolationMode =
+                System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear;
+            g.PixelOffsetMode =
+                System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+            g.SmoothingMode =
+                System.Drawing.Drawing2D.SmoothingMode.HighQuality;
             e.Graphics.SetClip(new Rectangle(0, 0, Width, Height));
-            _colorRibbon.Draw(e.Graphics);
+            if (ShowRibbon)
+            {
+                _colorRibbon.Draw(e.Graphics);
+            }
             if (ShowHistogram)
             {
                 _histogram.Draw(e.Graphics);
@@ -547,14 +589,14 @@ namespace ColorLegend
         /// <inheritdoc/>
         protected override void OnPaddingChanged(EventArgs e)
         {
-            RepositionElements();
+            DoLayout();
             base.OnPaddingChanged(e);
         }
 
         /// <inheritdoc/>
         protected override void OnResize(EventArgs e)
         {
-            RepositionElements();
+            DoLayout();
             base.OnResize(e);
         }
 
@@ -645,7 +687,7 @@ namespace ColorLegend
         /// <summary>
         /// Calculates locations and sizes of the child elements.
         /// </summary>
-        private void RepositionElements()
+        private void PositionElements()
         {
             int y = 0;
             if (!ShowTitle || string.IsNullOrEmpty(Title)) _titleLabel.Visible = false;
@@ -666,37 +708,44 @@ namespace ColorLegend
                 y += _exTitleLabel.Height + InnerMargin;
             }
 
+            var histRect = new Rectangle();
+            var labelRect = new Rectangle();
+
             // from top: padding, title, margin, extended title, two margins, histogram, padding
-            _rect1.Y = y;
-            _rect1.Height = Height - y - Padding.Bottom;
-            if (MaximumHistogramLength > 0)
-                _rect1.Height = Math.Min(_rect1.Height, MaximumHistogramLength);
+            histRect.Y = y;
+            histRect.Height = Height - y - Padding.Bottom;
             if (MinimumHistogramLength > 0)
-                _rect1.Height = Math.Max(_rect1.Height, MinimumHistogramLength);
+                histRect.Height = Math.Max(histRect.Height, MinimumHistogramLength);
 
             // from left: padding, color ribbon, axis, margin, histogram, padding
-            _rect1.X = Padding.Left;
-            _rect1.Width = (int) ((Width - Padding.Left - Padding.Right) * (ShowHistogram ? 0.4 : 0.8));
-            if (MaximumHistogramWidth > 0)
-                _rect1.Width = Math.Min(_rect1.Width, MaximumHistogramWidth);
-            if (MinimumHistogramWidth > 0)
-                _rect1.Width = Math.Max(_rect1.Width, MinimumHistogramWidth);
+            histRect.X = Padding.Left;
 
-            _colorRibbon.Bounds = _rect1;
+            // width left for color ribbon and histogram after labels
+            var leftWidth = 0f;
+            if (ShowHistogram || ShowRibbon)
+            {
+                var w = Width - Padding.Left - Padding.Right;
+                _labels.CalculateLabels(histRect.Height);
+                leftWidth = w - _labels.PreferredWidth;
+                if (ShowHistogram && ShowRibbon) leftWidth /= 2;
+                if (MinimumHistogramWidth > 0)
+                    leftWidth = Math.Max(MinimumHistogramWidth, leftWidth);
+                labelRect.Width = (int) (ShowHistogram && ShowRibbon ? w - 2 * leftWidth : w - leftWidth);
+            }
+            histRect.Width = ShowRibbon ? (int)leftWidth : 0;
 
-            _rect2.Y = _rect1.Y;
-            _rect2.X = (int) (_rect1.X + 1.5 * _rect1.Width + InnerMargin);
-            _rect2.Height = _rect1.Height;
-            _rect2.Width = _rect1.Width;
 
-            _histogram.Bounds = _rect2;
+            if (ShowRibbon)
+                _colorRibbon.Bounds = histRect;
 
-            var axisRect = new Rectangle();
-            axisRect.Width = _rect1.Width / (ShowHistogram ? 2 : 1);
-            axisRect.Height = _rect1.Height;
-            axisRect.X = _rect1.Right;
-            axisRect.Y = _rect1.Y;
-            _labels.Bounds = axisRect;
+            labelRect.Y = histRect.Y;
+            labelRect.X = histRect.Right;
+            labelRect.Height = histRect.Height;
+            _labels.Bounds = labelRect;
+            _labels.TicksToTheLeft = !ShowHistogram;
+
+            histRect.X = labelRect.Right;
+            _histogram.Bounds = histRect;
 
             Invalidate();
         }
@@ -711,6 +760,14 @@ namespace ColorLegend
         {
             var pen = new Pen(FrameColor, FrameWidth);
             g.DrawRectangle(pen, new Rectangle(FrameWidth / 2, FrameWidth / 2, Width - FrameWidth, Height - FrameWidth));  
+        }
+
+        private void DoLayout()
+        {
+            if (!_suspendRefresh)
+            {
+                PositionElements();
+            }
         }
 
         #endregion Private Methods

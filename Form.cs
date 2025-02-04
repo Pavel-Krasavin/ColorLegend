@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 
-namespace ColorLegend
+namespace ColorLegendExample
 {
-    public partial class Form1 : System.Windows.Forms.Form
+    public partial class Form : System.Windows.Forms.Form
     {
 
-        public Form1()
+        #region Constructors
+
+        public Form()
         {
             InitializeComponent();
-    //        SetStyle(ControlStyles.SupportsTransparentBackColor, true);
-            LoadCalc_Pressure();
+            //        SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+            InitializeColorLegend();
             panel1.MouseClick += OnMouseClick;
         }
+
+        #endregion Constructors
 
         #region Private API
 
@@ -25,6 +28,16 @@ namespace ColorLegend
             string[] textLines = null;
             textLines = File.ReadAllLines("..\\..\\Data\\CALC_PRESSURE");
             _colorLegend.Data = ParseText(textLines, -99);
+        }
+
+        private void InitializeColorLegend()
+        {
+            this._colorLegend.SuspendRefresh(true);
+      
+            LoadCalc_Pressure();
+
+
+            _colorLegend.SuspendRefresh(false);
         }
 
 
@@ -45,14 +58,13 @@ namespace ColorLegend
 
         #endregion Private API
 
+        #region Event Handlers
 
         protected void OnMouseClick(object sender, MouseEventArgs e)
         {
             base.OnMouseClick(e);
             _mouseCheckBox.Checked = !_mouseCheckBox.Checked;
         }
-
-        #region Event Handlers
 
         private void LoadFileButton_Click(object sender, EventArgs e)
         {
@@ -83,14 +95,14 @@ namespace ColorLegend
             _colorLegend.Data = data;
         }
 
-        #endregion Event Handlers
-
         private void SettingsToolStripButton_Click(object sender, EventArgs e)
         {
             var propertiesForm = new ColorLegendProperties();
             propertiesForm.ColorLegend = _colorLegend;
             propertiesForm.ShowDialog();
         }
+
+        #endregion Event Handlers
 
     }
 }
